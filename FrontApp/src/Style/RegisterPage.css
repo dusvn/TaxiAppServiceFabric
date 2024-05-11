@@ -1,0 +1,53 @@
+.register-container {
+    @apply flex justify-center items-center h-screen;
+}
+
+.register-form {
+    @apply w-max p-8 shadow-md text-center;
+    max-width: 500px; /* Set a maximum width */
+    width: 100%;
+}
+
+.register-form input[type="text"],
+.register-form input[type="email"],
+.register-form input[type="password"],
+.register-form select {
+    @apply border border-gray-950 rounded px-3 py-2 mb-4 w-full;
+}
+
+.register-form input[type="file"] {
+    @apply border border-gray-300 rounded px-3 py-2 mb-4 w-full;
+}
+
+.register-form button {
+    @apply bg-black text-white px-4 py-2 rounded w-full;
+}
+
+.register-form button:hover {
+    @apply bg-slate-950;
+}
+
+.register-form .signup-link {
+    @apply mt-4 text-center;
+}
+
+.register-form .signup-link a {
+    @apply text-gray-800 font-bold;
+}
+
+.register-form .signup-link a:hover {
+    @apply underline;
+}
+
+h2 {
+    width: 100%; 
+    text-align: center; 
+    border-bottom: 1px solid #000; 
+    line-height: 0.1em;
+    margin: 10px 0 20px; 
+ } 
+ 
+ h2 span { 
+     background:#fff; 
+     padding:0 10px; 
+ }
