@@ -720,11 +720,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\0010\\Desktop\\ServiceFabricTaxiApp\\TaxiApp\\DrivingService\\DrivingService.csproj",
+      "projectUniqueName": "C:\\Users\\0010\\Desktop\\ServiceFabric\\TaxiApp\\DrivingService\\DrivingService.csproj",
       "projectName": "DrivingService",
-      "projectPath": "C:\\Users\\0010\\Desktop\\ServiceFabricTaxiApp\\TaxiApp\\DrivingService\\DrivingService.csproj",
+      "projectPath": "C:\\Users\\0010\\Desktop\\ServiceFabric\\TaxiApp\\DrivingService\\DrivingService.csproj",
       "packagesPath": "C:\\Users\\0010\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\0010\\Desktop\\ServiceFabricTaxiApp\\TaxiApp\\DrivingService\\obj\\",
+      "outputPath": "C:\\Users\\0010\\Desktop\\ServiceFabric\\TaxiApp\\DrivingService\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

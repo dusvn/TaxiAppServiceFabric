@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { LoginApiCall } from '../Services/LoginService';
 import {useNavigate} from "react-router-dom";
 
+
 export default function Login() {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState(true);
@@ -12,6 +13,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState(true);
   const loginApiEndpoint = process.env.REACT_APP_LOGIN;
+
 
   const navigate = useNavigate();
 
@@ -29,7 +31,7 @@ export default function Login() {
           console.log(typeof responseOfLogin);
           if("Login successful" == responseOfLogin.message){
             localStorage.setItem('token', responseOfLogin.token);
-            navigate("/Dashboard", { state: { user: responseOfLogin.user } });
+            navigate("/Dashboard", { state: { user: responseOfLogin.user } });       
           }
         })
         .catch((error) => {

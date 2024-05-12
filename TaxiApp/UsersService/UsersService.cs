@@ -54,7 +54,7 @@ namespace UsersService
                 using (var transaction = StateManager.CreateTransaction())
                 {
 
-                   
+                    await userDictionary.AddAsync(transaction,user.Email,user); // dodaj ga prvo u reliable 
 
                     //insert image of user in blob
                     CloudBlockBlob blob = await dataRepo.GetBlockBlobReference("users", $"image_{user.Username}");
@@ -67,7 +67,7 @@ namespace UsersService
                     TableOperation operation = TableOperation.Insert(newUser);
                     await dataRepo.Users.ExecuteAsync(operation);
 
-                    await userDictionary.AddAsync(transaction, user.Username,user);
+            
                     await transaction.CommitAsync();
 
                 }
@@ -110,58 +110,6 @@ namespace UsersService
             }
         }
 
-
-
-
-
-
-
-
-        //public async Task Migrate()
-        //{
-
-
-        //    var userDictionary = await StateManager.GetOrAddAsync<IReliableDictionary<string, User>>("Users");
-
-        //    using (var transaction = StateManager.CreateTransaction())
-        //    {
-        //        var enumerableNew = await userDictionary.CreateEnumerableAsync(transaction); // ovaj iz state managera
-        //        var enumerator = enumerableNew.GetAsyncEnumerator();
-
-        //        if (await userDictionary.GetCountAsync(transaction) < 1) // ako nema entiteta 
-        //        {
-        //            Dictionary<string, User> users = await DataFromDatabase();
-
-        //            if (users.Count() > 0) // ako postoji nesto upisano 
-        //            {
-        //                foreach (var user in users)
-        //                {
-        //                    await userDictionary.AddAsync(transaction, user.Key, user.Value); // dodaje u taj dic i state-a 
-        //                }
-
-        //                await transaction.CommitAsync();
-        //                return;
-        //            }
-        //        }
-
-        //        while (await enumerator.MoveNextAsync(CancellationToken.None))
-        //        {
-        //            var current = enumerator.Current;
-
-        //            try
-        //            {
-        //                await WriteUser(current.Value);
-
-        //            }
-        //            catch (Exception)
-        //            {
-        //                throw;
-        //            }
-        //        }
-        //    }
-
-        //    Thread.Sleep(3000);
-        //}
 
         /// <summary>
         /// Optional override to create listeners (e.g., HTTP, Service Remoting, WCF, etc.) for this service replica to handle client or user requests.

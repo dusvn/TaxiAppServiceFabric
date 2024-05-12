@@ -6874,11 +6874,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\0010\\Desktop\\ServiceFabricTaxiApp\\TaxiApp\\Common\\Common.csproj",
+      "projectUniqueName": "C:\\Users\\0010\\Desktop\\ServiceFabric\\TaxiApp\\Common\\Common.csproj",
       "projectName": "Common",
-      "projectPath": "C:\\Users\\0010\\Desktop\\ServiceFabricTaxiApp\\TaxiApp\\Common\\Common.csproj",
+      "projectPath": "C:\\Users\\0010\\Desktop\\ServiceFabric\\TaxiApp\\Common\\Common.csproj",
       "packagesPath": "C:\\Users\\0010\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\0010\\Desktop\\ServiceFabricTaxiApp\\TaxiApp\\Common\\obj\\",
+      "outputPath": "C:\\Users\\0010\\Desktop\\ServiceFabric\\TaxiApp\\Common\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
