@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export function makeImage(imageFile){
     if (imageFile.fileContent) {
                     const byteCharacters = atob(imageFile.fileContent);
@@ -21,4 +23,30 @@ export function convertDateTimeToDateOnly(dateTime){
 
     // Format the date as 'DD-MM-YYYY'
     return `${day.toString().padStart(2, '0')}-${(month + 1).toString().padStart(2, '0')}-${year}`;
+}
+
+
+export async function changeUserFields(apiEndpoint, firstName, lastName, birthday, address, email, password, imageUrl, username, previousEmail, jwt) {
+    const formData = new FormData();
+    formData.append('FirstName', firstName);
+    formData.append('LastName', lastName);
+    formData.append('Birthday', birthday);
+    formData.append('Address', address);
+    formData.append('Email', email);
+    formData.append('Password', password);
+    //formData.append('ImageUrl', imageUrl);
+    formData.append('Username', username);
+    formData.append('PreviousEmail', previousEmail);
+    console.log(jwt);
+    try {
+        const response = await axios.put(apiEndpoint, formData, {
+            headers: {
+                'Authorization': `Bearer ${jwt}`,
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        console.log("Change of user successfully happened!", response);
+    } catch (error) {
+        console.error('Error while calling API to change user fields:', error);
+    }
 }

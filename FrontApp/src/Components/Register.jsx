@@ -48,7 +48,6 @@ export default function Register() {
     const [googleRegisterView, setGoogleRegisterView] = useState(true);
     const navigate = useNavigate();
 
-    //console.log(googleRegisterView);
     const handleRegisterClick = (e) => {
         e.preventDefault();
 

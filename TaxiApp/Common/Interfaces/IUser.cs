@@ -27,5 +27,8 @@ namespace Common.Interfaces
 
         [OperationContract]
         Task<bool> changeDriverStatus(string email, bool status);
+
+        [OperationContract]
+        Task<FullUserDTO> changeUserFields(UserForUpdateOverNetwork user); 
     }
 }

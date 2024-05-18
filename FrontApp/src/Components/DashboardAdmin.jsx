@@ -28,15 +28,21 @@ export default function DashboardAdmin() {
         navigate('/');
     };
 
-    const handleGetAllDrivers = async () => {
+    const handleShowDrivers = async () => {
         try {
-            const drivers = await GetAllDrivers(getAllDriversEndpoint, token);
-            setDriversView(drivers);
             setView('drivers');
         } catch (error) {
             console.error('Error fetching drivers:', error.message);
         }
     };
+
+    const handleEditProfile = async () =>{
+        try{
+            setView('editProfile');
+        }catch(error){
+            console.log("Error when I try to show profile");
+        }
+    }
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -56,7 +62,7 @@ export default function DashboardAdmin() {
                     <div>
                         <hr style={{ width: '330px' }}></hr>
                     </div>
-                    <button className="button">
+                    <button className="button" onClick={handleEditProfile}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <MdPerson size={25} style={{ marginRight: '30px' }} />
                             <span>Profile</span>
@@ -68,7 +74,7 @@ export default function DashboardAdmin() {
                             <span>Verify drivers</span>
                         </div>
                     </button>
-                    <button className="button" onClick={handleGetAllDrivers}>
+                    <button className="button" onClick={handleShowDrivers}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <FaCar size={25} style={{ marginRight: '30px' }} />
                             <span>Drivers</span>
@@ -84,7 +90,7 @@ export default function DashboardAdmin() {
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <div style={{ height: '100%', display: 'flex' }}>
                         <div style={{ width: '100%', backgroundColor: 'white' }}>
-                            {view === 'editProfile' ? <EditProfile user={user} /> : <DriversView driversView={driversView}/>}
+                            {view === 'editProfile' ? <EditProfile user={user} /> : <DriversView/>}
                         </div>
                     </div>
                 </div>

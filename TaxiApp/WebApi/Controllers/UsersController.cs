@@ -30,14 +30,18 @@ namespace WebApi.Controllers
             _config = config;
         }
 
-
-
-
-
-
         [HttpPost]
         public async Task<IActionResult> RegularRegister([FromForm] UserRegister userData)
         {
+            if (string.IsNullOrEmpty(userData.Email) || !IsValidEmail(userData.Email)) return BadRequest("Invalid email format");
+            if (string.IsNullOrEmpty(userData.Password)) return BadRequest("Password cannot be null or empty");
+            if (string.IsNullOrEmpty(userData.Username)) return BadRequest("Username cannot be null or empty");
+            if (string.IsNullOrEmpty(userData.FirstName)) return BadRequest("First name cannot be null or empty");
+            if (string.IsNullOrEmpty(userData.LastName)) return BadRequest("Last name cannot be null or empty");
+            if (string.IsNullOrEmpty(userData.Address)) return BadRequest("Address cannot be null or empty");
+            if (string.IsNullOrEmpty(userData.TypeOfUser)) return BadRequest("Type of user must be selected!");
+            if (string.IsNullOrEmpty(userData.Birthday)) return BadRequest("Birthday need to be selected!");
+            if (userData.ImageUrl.Length == 0) return BadRequest("You need to send image while doing registration!");
             try
             {
 
@@ -230,6 +234,48 @@ namespace WebApi.Controllers
             }
         }
 
+
+        [Authorize(Policy = "Admin")]
+        [HttpPut]
+        public async Task<IActionResult> ChangeUserFields([FromForm] UserForUpdate user)
+        {
+            UserForUpdateOverNetwork userForUpdate = new UserForUpdateOverNetwork(user);
+
+            try
+            {
+                var fabricClient = new FabricClient();
+                FullUserDTO result = null;
+
+                var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/UsersService"));
+                foreach (var partition in partitionList)
+                {
+                    var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
+                    var proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UsersService"), partitionKey);
+                    var proxyResult = await proxy.changeUserFields(userForUpdate);
+                    if (proxyResult != null)
+                    {
+                        result = proxyResult;
+                        break;
+                    }
+                }
+
+                if (result != null)
+                {
+                    var response = new
+                    {
+                        changedUser = result,
+                        message = "Succesfuly changed user fields!"
+                    };
+                    return Ok(response);
+                }
+                else return StatusCode(409, "User for change is not in db!");
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occurred while updating user");
+            }
+        }
 
         private bool IsValidEmail(string email)
         {

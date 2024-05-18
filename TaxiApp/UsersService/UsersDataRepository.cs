@@ -12,6 +12,7 @@ using Common.Entities;
 using static System.Net.Mime.MediaTypeNames;
 using Common.Models;
 using System.Collections;
+using Common.Interfaces;
 
 
 namespace UsersService
@@ -80,6 +81,27 @@ namespace UsersService
             else
             {
                 return false;
+            }
+        }
+
+        public async Task UpdateUser(UserForUpdateOverNetwork userOverNetwork,User u)
+        {
+            TableQuery<UserEntity> usersQuery = new TableQuery<UserEntity>().Where(TableQuery.GenerateFilterCondition("Email", QueryComparisons.Equal, userOverNetwork.PreviousEmail));
+            TableQuerySegment<UserEntity> queryResult = await Users.ExecuteQuerySegmentedAsync(usersQuery, null);
+
+            if (queryResult.Results.Count > 0)
+            {
+                UserEntity userFromTable = queryResult.Results[0];
+                userFromTable.Email = u.Email;
+                userFromTable.FirstName = u.FirstName;
+                userFromTable.LastName = u.LastName;
+                userFromTable.Address = u.Address;
+                userFromTable.Birthday = u.Birthday;
+                userFromTable.Username = u.Username;
+                userFromTable.Username = u.Username;
+                userFromTable.ImageUrl = u.ImageUrl;
+                var operation = TableOperation.Replace(userFromTable);
+                await Users.ExecuteAsync(operation);
             }
         }
 

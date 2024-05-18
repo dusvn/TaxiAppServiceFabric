@@ -1,38 +1,69 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import '../Style/Profile.css';
-import { makeImage, convertDateTimeToDateOnly } from '../Services/ProfileService';
+import { makeImage, convertDateTimeToDateOnly, changeUserFields } from '../Services/ProfileService';
 
 export default function EditProfile(props) {
-    const user = props;
+    const user = props.user;
+    const apiEndpoint = process.env.REACT_APP_CHANGE_USER_FIELDS;
 
     const [isEditing, setIsEditing] = useState(false);
-    const [userName, setUserName] = useState(user["user"].username);
-    const [address, setAddress] = useState(user["user"].address);
-    const [birthday, setBirthday] = useState(convertDateTimeToDateOnly(user["user"].birthday));
-    const [email, setEmail] = useState(user["user"].email);
-    const [firstName, setFirstName] = useState(user["user"].firstName);
-    const [image, setImage] = useState(makeImage(user["user"].imageFile));
-    const [lastName, setLastName] = useState(user["user"].lastName);
-    const [averageRating, setAverageRating] = useState(user["user"].averageRating);
-    const [isVerified, setIsVerified] = useState(user["user"].isVerified);
-    const [isBlocked, setIsBlocked] = useState(user["user"].isBlocked);
-    const [role, setRole] = useState(user["user"].role);
-    const [sumOfRatings, setSumOfRatings] = useState(user["user"].sumOfRatings);
-    const [numOfRatings, setNumOfRatings] = useState(user["user"].numOfRatings);
-    const [password, setPassword] = useState('');
-    const [repeatPassword, setRepeatPassowrd] = useState('');
-    const [oldPassword,setOldPassword] = useState('');
+    const [originalUser, setOriginalUser] = useState({
+        username: user.username,
+        address: user.address,
+        birthday: convertDateTimeToDateOnly(user.birthday),
+        email: user.email,
+        firstName: user.firstName,
+        image: makeImage(user.imageFile),
+        lastName: user.lastName
+    });
 
-    console.log(birthday);
+    const [editedUser, setEditedUser] = useState({ ...originalUser });
+    const [password, setPassword] = useState('');
+    const [repeatPassword, setRepeatPassword] = useState('');
+    const [oldPassword, setOldPassword] = useState('');
+    const [newImageFile, setNewImageFile] = useState(null);
+    const [newImageUrl, setNewImageUrl] = useState(originalUser.image);
+
+    const handleCancelClick = () => {
+        setEditedUser({ ...originalUser });
+        setNewImageFile(null);
+        setNewImageUrl(originalUser.image);
+        setIsEditing(false);
+    };
 
     const handleEditClick = () => {
         setIsEditing(true);
     };
 
-    const handleSaveClick = () => {
-        // Perform save logic here
-        setIsEditing(false);
+    const handleSaveClick = async () => {
+        const userToSave = {
+            username: editedUser.username,
+            address: editedUser.address,
+            birthday: editedUser.birthday, // Assuming this is already in the desired format
+            email: editedUser.email,
+            firstName: editedUser.firstName,
+            imageUrl: originalUser.image,
+            lastName: editedUser.lastName,
+            password: password,
+            oldPassword: oldPassword
+        };
+
+        try {
+            await changeUserFields(apiEndpoint,userToSave.firstName,userToSave.lastName,userToSave.birthday,userToSave.address,userToSave.email,userToSave.password,userToSave.imageUrl,userToSave.username,originalUser.email,localStorage.getItem('token'));
+            setOriginalUser({ ...editedUser, image: newImageFile ? newImageUrl : originalUser.image });
+            setIsEditing(false);
+        } catch (error) {
+            console.error('Error updating user:', error);
+        }
+    };
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setNewImageFile(file);
+            const imageUrl = URL.createObjectURL(file);
+            setNewImageUrl(imageUrl);
+        }
     };
 
     return (
@@ -41,67 +72,65 @@ export default function EditProfile(props) {
                 Edit profile
             </div>
             <div>
-                <img src={image} alt="User" style={{ width: '96px', height: '96px', marginLeft: '30px', marginTop: '20px', borderRadius: '50%' }} />
+                <img src={newImageUrl} alt="User" style={{ width: '100px', height: '100px', marginLeft: '30px', marginTop: '20px', borderRadius: '50%' }} />
             </div>
             {isEditing ? (
-                <div className='customView-div' style={{marginLeft: '30px',marginTop: '20px'}}>
-                    <input type='file'  />
+                <div className='customView-div' style={{ marginLeft: '30px', marginTop: '20px' }}>
+                    <input type='file' onChange={handleImageChange} />
                 </div>
             ) : (
                 <div className='customView-div'></div>
             )}
 
-
             <div style={{ marginLeft: '30px', marginTop: '20px' }}>
                 <div className='customProfile-div'>Username</div>
                 {isEditing ? (
-                    <input className='customView-div' type='text' value={userName} onChange={(e) => setUserName(e.target.value)} />
+                    <input className='customView-div' type='text' value={editedUser.username} onChange={(e) => setEditedUser({ ...editedUser, username: e.target.value })} />
                 ) : (
-                    <div className='customView-div'>{userName}</div>
+                    <div className='customView-div'>{editedUser.username}</div>
                 )}
                 <hr className='customProfile-hr'></hr>
 
-                {/* Repeat the pattern for other fields */}
-                {/* For example: */}
                 <div className='customProfile-div'>First name</div>
                 {isEditing ? (
-                    <input className='customView-div' type='text' value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                    <input className='customView-div' type='text' value={editedUser.firstName} onChange={(e) => setEditedUser({ ...editedUser, firstName: e.target.value })} />
                 ) : (
-                    <div className='customView-div'>{firstName}</div>
+                    <div className='customView-div'>{editedUser.firstName}</div>
                 )}
                 <hr className='customProfile-hr'></hr>
 
                 <div className='customProfile-div'>Last name</div>
                 {isEditing ? (
-                    <input className='customView-div' type='text' value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                    <input className='customView-div' type='text' value={editedUser.lastName} onChange={(e) => setEditedUser({ ...editedUser, lastName: e.target.value })} />
                 ) : (
-                    <div className='customView-div'>{lastName}</div>
+                    <div className='customView-div'>{editedUser.lastName}</div>
                 )}
                 <hr className='customProfile-hr'></hr>
 
                 <div className='customProfile-div'>Address</div>
                 {isEditing ? (
-                    <input className='customView-div' type='text' value={address} onChange={(e) => setAddress(e.target.value)} />
+                    <input className='customView-div' type='text' value={editedUser.address} onChange={(e) => setEditedUser({ ...editedUser, address: e.target.value })} />
                 ) : (
-                    <div className='customView-div'>{address}</div>
+                    <div className='customView-div'>{editedUser.address}</div>
                 )}
                 <hr className='customProfile-hr'></hr>
 
                 <div className='customProfile-div'>Birthday</div>
                 {isEditing ? (
-                    <input className='customView-div' type='text' value={birthday} onChange={(e) => setBirthday(e.target.value)} />
+                    <input className='customView-div' type='text' value={editedUser.birthday} onChange={(e) => setEditedUser({ ...editedUser, birthday: e.target.value })} />
                 ) : (
-                    <div className='customView-div'>{birthday}</div>
+                    <div className='customView-div'>{editedUser.birthday}</div>
                 )}
                 <hr className='customProfile-hr'></hr>
 
                 <div className='customProfile-div'>Email</div>
                 {isEditing ? (
-                    <input className='customView-div' type='text' value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '250px' }} />
+                    <input className='customView-div' type='text' value={editedUser.email} onChange={(e) => setEditedUser({ ...editedUser, email: e.target.value })} style={{ width: '250px' }} />
                 ) : (
-                    <div className='customView-div'>{email}</div>
+                    <div className='customView-div'>{editedUser.email}</div>
                 )}
                 <hr className='customProfile-hr'></hr>
+
                 <div className='customProfile-div'>Old password</div>
                 {isEditing ? (
                     <input className='customView-div' type='password' value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
@@ -109,7 +138,6 @@ export default function EditProfile(props) {
                     <div className='customView-div'><input className='customView-div' type='password' placeholder='********' disabled></input></div>
                 )}
                 <hr className='customProfile-hr'></hr>
-
 
                 <div className='customProfile-div'>New password</div>
                 {isEditing ? (
@@ -121,7 +149,7 @@ export default function EditProfile(props) {
 
                 <div className='customProfile-div'>Repeat new password</div>
                 {isEditing ? (
-                    <input className='customView-div' type='password' value={repeatPassword} onChange={(e) => setRepeatPassowrd(e.target.value)} />
+                    <input className='customView-div' type='password' value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} />
                 ) : (
                     <div className='customView-div'><input className='customView-div' type='password' placeholder='********' disabled></input></div>
                 )}
@@ -132,13 +160,11 @@ export default function EditProfile(props) {
                 {isEditing ? (
                     <div>
                         <button className='edit-button' onClick={handleSaveClick}>Save</button>
-                        <button className='edit-button' onClick={() => setIsEditing(false)}>Cancel</button>
+                        <button className='edit-button' onClick={handleCancelClick}>Cancel</button>
                     </div>
                 ) : (
                     <div><button className='edit-button' onClick={handleEditClick}>Edit</button></div>
                 )}
-
-
             </div>
         </div>
     );

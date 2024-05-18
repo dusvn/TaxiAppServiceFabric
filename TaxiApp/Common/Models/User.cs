@@ -144,7 +144,7 @@ namespace Common.Models
             Status = s;
         }
 
-        private FileUploadDTO makeFileOverNetwork(IFormFile file)
+        public static FileUploadDTO makeFileOverNetwork(IFormFile file)
         {
             FileUploadDTO fileOverNetwork;
 

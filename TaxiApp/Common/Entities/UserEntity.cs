@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Common.DTO;
 using Common.Enums;
+using Common.Interfaces;
 using Common.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.WindowsAzure.Storage.Table;
@@ -54,9 +55,7 @@ namespace Common.Entities
         public string ImageUrl { get; set; }
         //azure table ne podrzava da  cuva enume 
         public string Status { get; set; }
-        public UserEntity()
-        {
-        }
+
 
         public UserEntity(User u,string imageUrl)
         {
@@ -80,6 +79,8 @@ namespace Common.Entities
 
         }
 
+
+
         public UserEntity(User u)
         {
             RowKey = u.Username; // key username of user
@@ -102,6 +103,8 @@ namespace Common.Entities
 
         }
 
-
+        public UserEntity()
+        {
+        }
     }
 }
