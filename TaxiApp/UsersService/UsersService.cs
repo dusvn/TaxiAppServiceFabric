@@ -40,7 +40,7 @@ namespace UsersService
             : base(context)
         {
 
-            dataRepo = new UsersDataRepository("UsersTaxiApp");
+            dataRepo = new UsersDataRepository("UsersTaxiAppDusan");
         }
 
 
@@ -53,25 +53,29 @@ namespace UsersService
             {
                 using (var transaction = StateManager.CreateTransaction())
                 {
+                    if (!await CheckIfUserAlreadyExists(user)) 
+                    {
 
-                    await userDictionary.AddAsync(transaction,user.Email,user); // dodaj ga prvo u reliable 
+                        await userDictionary.AddAsync(transaction, user.Email, user); // dodaj ga prvo u reliable 
 
-                    //insert image of user in blob
-                    CloudBlockBlob blob = await dataRepo.GetBlockBlobReference("users", $"image_{user.Username}");
-                    blob.Properties.ContentType = user.ImageFile.ContentType;
-                    await blob.UploadFromByteArrayAsync(user.ImageFile.FileContent, 0, user.ImageFile.FileContent.Length);
-                    string imageUrl = blob.Uri.AbsoluteUri; 
+                        //insert image of user in blob
+                        CloudBlockBlob blob = await dataRepo.GetBlockBlobReference("users", $"image_{user.Username}");
+                        blob.Properties.ContentType = user.ImageFile.ContentType;
+                        await blob.UploadFromByteArrayAsync(user.ImageFile.FileContent, 0, user.ImageFile.FileContent.Length);
+                        string imageUrl = blob.Uri.AbsoluteUri;
 
-                    //insert user in database
-                    UserEntity newUser = new UserEntity(user, imageUrl);
-                    TableOperation operation = TableOperation.Insert(newUser);
-                    await dataRepo.Users.ExecuteAsync(operation);
+                        //insert user in database
+                        UserEntity newUser = new UserEntity(user, imageUrl);
+                        TableOperation operation = TableOperation.Insert(newUser);
+                        await dataRepo.Users.ExecuteAsync(operation);
 
-            
-                    await transaction.CommitAsync();
 
+                        await transaction.CommitAsync();
+                        return true;
+                    }
+                    return false;
                 }
-                return true;
+               
             }
             catch (Exception ex)
             {
@@ -79,7 +83,24 @@ namespace UsersService
             }
         }
 
-        
+        private async Task<bool> CheckIfUserAlreadyExists(User user)
+        {
+            var users = await StateManager.GetOrAddAsync<IReliableDictionary<string, User>>("UserEntities");
+            try
+            {
+                using (var transaction = StateManager.CreateTransaction())
+                {
+                    var result = await users.TryGetValueAsync(transaction, user.Email);
+                    return result.HasValue;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
 
         private async Task LoadUsers()
         {
@@ -158,14 +179,14 @@ namespace UsersService
         }
 
         public async Task<FullUserDTO> loginUser(LoginUserDTO loginUserDTO)
-        {
+          {
             var users = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, User>>("UserEntities");
             using (var tx = this.StateManager.CreateTransaction())
             {
                 ConditionalValue<User> result = await users.TryGetValueAsync(tx, loginUserDTO.Email);
                 if (result.HasValue && result.Value.Email == loginUserDTO.Email && result.Value.Password == loginUserDTO.Password)
                 {
-                   return new FullUserDTO(result.Value.Address,result.Value.AverageRating,result.Value.SumOfRatings,result.Value.NumOfRatings,result.Value.Birthday,result.Value.Email,result.Value.IsVerified,result.Value.IsBlocked,result.Value.FirstName,result.Value.LastName,result.Value.Username,result.Value.TypeOfUser,result.Value.ImageFile);
+                   return new FullUserDTO(result.Value.Address,result.Value.AverageRating,result.Value.SumOfRatings,result.Value.NumOfRatings,result.Value.Birthday,result.Value.Email,result.Value.IsVerified,result.Value.IsBlocked,result.Value.FirstName,result.Value.LastName,result.Value.Username,result.Value.TypeOfUser,result.Value.ImageFile,result.Value.Password,result.Value.Status);
                 }
                 else return new FullUserDTO();
 
@@ -193,6 +214,57 @@ namespace UsersService
 
             return userList;
 
+        }
+
+        public async Task<List<DriverViewDTO>> listDrivers()
+        {
+            var users = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, User>>("UserEntities");
+            List<DriverViewDTO> drivers = new List<DriverViewDTO>();
+            using (var tx = this.StateManager.CreateTransaction())
+            {
+                var enumerable = await users.CreateEnumerableAsync(tx);
+                using (var enumerator = enumerable.GetAsyncEnumerator())
+                {
+                    while(await enumerator.MoveNextAsync(default (CancellationToken)))
+                    {
+                        if(enumerator.Current.Value.TypeOfUser == UserRoles.Roles.Driver)
+                        {
+                            drivers.Add(new DriverViewDTO(enumerator.Current.Value.Email, enumerator.Current.Value.FirstName, enumerator.Current.Value.LastName, enumerator.Current.Value.Username, enumerator.Current.Value.IsBlocked,enumerator.Current.Value.AverageRating));
+                        }
+                    }
+                }
+            }
+
+            return drivers; 
+
+        }
+
+        public async Task<bool> changeDriverStatus(string email, bool status)
+        {
+            var users = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, User>>("UserEntities");
+            using (var tx = this.StateManager.CreateTransaction())
+            {
+                ConditionalValue<User> result = await users.TryGetValueAsync(tx,email);
+                if (result.HasValue)
+                {
+                    User user = result.Value;
+                    user.IsBlocked = status;
+                    await users.SetAsync(tx, email, user);
+
+                    // Update in table
+                    //UserEntity newUser = new UserEntity(user);
+                    //TableOperation operation = TableOperation.Replace(newUser); // Use Replace instead of Insert
+                    //await dataRepo.Users.ExecuteAsync(operation);
+                    await dataRepo.UpdateEntity(email, status);
+
+                    await tx.CommitAsync();
+
+                    return true;
+                }
+                else return false;
+
+
+            }
 
         }
     }

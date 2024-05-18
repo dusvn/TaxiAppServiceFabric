@@ -3,8 +3,8 @@ import { GoogleLogin } from 'react-google-login';
 import '../Style/RegisterPage.css';
 import { gapi } from 'gapi-script';
 import { Link } from 'react-router-dom';
-import {RegularRegisterApiCall} from '../Services/RegisterServices.js';
-
+import { RegularRegisterApiCall } from '../Services/RegisterServices.js';
+import {useNavigate} from "react-router-dom";
 
 
 export default function Register() {
@@ -40,16 +40,19 @@ export default function Register() {
     const [typeOfUserError, setTypeOfUserError] = useState(false);
 
     const [imageUrl, setImageUrl] = useState(null);
-       
+
 
     const [imageUrlError, setImageUrlError] = useState(true);
 
-    console.log("Image url:",imageUrl);
+    const [userGoogleRegister, setUserGoogleRegister] = useState('');
+    const [googleRegisterView, setGoogleRegisterView] = useState(true);
+    const navigate = useNavigate();
 
+    //console.log(googleRegisterView);
     const handleRegisterClick = (e) => {
         e.preventDefault();
-    
-        RegularRegisterApiCall(
+
+       const resultOfRegister = RegularRegisterApiCall(
             firstNameError,
             lastNameError,
             birthdayError,
@@ -71,10 +74,14 @@ export default function Register() {
             username,
             regularRegisterApiEndpoint
         );
-        
+        if(resultOfRegister){
+            alert("Succeesfuly register!"); 
+            navigate("/");
+        }
+
     };
-    
-    
+
+
 
     const handleEmailChange = (e) => {
         const value = e.target.value;
@@ -164,30 +171,25 @@ export default function Register() {
     function isOlderThan18(dateString) {
         const today = new Date();
         const selectedDate = new Date(dateString);
-        
-        // Calculate age
         let age = today.getFullYear() - selectedDate.getFullYear();
         const monthDiff = today.getMonth() - selectedDate.getMonth();
         if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < selectedDate.getDate())) {
             age--;
         }
-    
         return age >= 18;
     }
- 
-    
     const handleBirthdayChange = (e) => {
         const value = e.target.value;
         setBirthday(value);
         if (value.trim() === '') {
             setBirthdayError(true);
         } else {
-                var isOldEnough = isOlderThan18(value);
-                if(isOldEnough) setBirthdayError(false);
-                else setBirthdayError(true);
-            }
+            var isOldEnough = isOlderThan18(value);
+            if (isOldEnough) setBirthdayError(false);
+            else setBirthdayError(true);
+        }
     };
-    
+
 
     const handleTypeOfUserChange = (e) => {
         const value = e.target.value;
@@ -201,7 +203,7 @@ export default function Register() {
 
     const handleImageUrlChange = (e) => {
         const selectedFile = e.target.files[0];
-        
+
         if (!selectedFile || !selectedFile.name) {
             setImageUrlError(true);
         } else {
@@ -209,7 +211,7 @@ export default function Register() {
             setImageUrlError(false);
         }
     };
-      
+
 
     useEffect(() => {
         if (clientId) {
@@ -227,6 +229,8 @@ export default function Register() {
 
     const onSuccess = (res) => {
         console.log("Succesfuly register Current user:", res.profileObj);
+        setUserGoogleRegister(res.profileObj);
+        setGoogleRegisterView(false);
     }
 
     const onFailure = (res) => {
@@ -244,151 +248,156 @@ export default function Register() {
                     <hr></hr>
                     <br></br>
                     <div className="flex flex-col md:flex-row w-max">
-                        <form onSubmit={handleRegisterClick} enctype="multipart/form-data" method='post'> 
-                        <table className="w-full">
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <input
+                        <form onSubmit={handleRegisterClick} enctype="multipart/form-data" method='post'>
+                            <table className="w-full">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input
+                                                className={`input-field mb-4 w-full md:ml-2`}
+                                                style={{ borderColor: firstNameError ? '#EF4444' : '#E5E7EB' }}
+                                                type="text"
+                                                placeholder="First Name"
+                                                value={firstName}
+                                                onChange={handleFirstNameChange}
+                                                required
+                                            />
+                                        </td>
+                                        <td> <input
                                             className={`input-field mb-4 w-full md:ml-2`}
-                                            style={{ borderColor: firstNameError ? '#EF4444' : '#E5E7EB' }}
+                                            style={{ borderColor: lastNameError ? '#EF4444' : '#E5E7EB' }}
                                             type="text"
-                                            placeholder="First Name"
-                                            value={firstName}
-                                            onChange={handleFirstNameChange}
+                                            placeholder="Last Name"
+                                            value={lastName}
+                                            onChange={handleLastNameChange}
                                             required
                                         />
-                                    </td>
-                                    <td> <input
-                                        className={`input-field mb-4 w-full md:ml-2`}
-                                        style={{ borderColor: lastNameError ? '#EF4444' : '#E5E7EB' }}
-                                        type="text"
-                                        placeholder="Last Name"
-                                        value={lastName}
-                                        onChange={handleLastNameChange}
-                                        required
-                                    />
 
-                                    </td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td className='font-serif font-bold'>Date of birth</td>
-                                    <td><input
-                                        className={`input-field mb-4 w-full md:ml-2`}
-                                        style={{ borderColor: birthdayError ? '#EF4444' : '#E5E7EB' }}
-                                        type="date"
-                                        value={birthday}
-                                        onChange={handleBirthdayChange}
-                                        required
-                                    />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colSpan={2}><input
-                                        className={`input-field mb-4 w-full md:ml-2`}
-                                        style={{ borderColor: addressError ? '#EF4444' : '#E5E7EB' }}
-                                        type="text"
-                                        placeholder="Address"
-                                        value={address}
-                                        onChange={handleAddressChange}
-                                        required
-                                    />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <input
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td className='font-serif font-bold'>Date of birth</td>
+                                        <td><input
                                             className={`input-field mb-4 w-full md:ml-2`}
-                                            style={{ borderColor: usernameError ? '#EF4444' : '#E5E7EB' }}
+                                            style={{ borderColor: birthdayError ? '#EF4444' : '#E5E7EB' }}
+                                            type="date"
+                                            value={birthday}
+                                            onChange={handleBirthdayChange}
+                                            required
+                                        />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colSpan={2}><input
+                                            className={`input-field mb-4 w-full md:ml-2`}
+                                            style={{ borderColor: addressError ? '#EF4444' : '#E5E7EB' }}
                                             type="text"
-                                            placeholder="Username"
-                                            value={username}
-                                            onChange={handleUsernameChange}
+                                            placeholder="Address"
+                                            value={address}
+                                            onChange={handleAddressChange}
                                             required
                                         />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input
+                                                className={`input-field mb-4 w-full md:ml-2`}
+                                                style={{ borderColor: usernameError ? '#EF4444' : '#E5E7EB' }}
+                                                type="text"
+                                                placeholder="Username"
+                                                value={username}
+                                                onChange={handleUsernameChange}
+                                                required
+                                            />
 
-                                    </td>
-                                    <input
-                                        className={`input-field mb-4 w-full md:ml-2`}
-                                        style={{ borderColor: emailError ? '#EF4444' : '#E5E7EB' }}
-                                        type="email"
-                                        placeholder="Email"
-                                        value={email}
-                                        onChange={handleEmailChange}
-                                        required
-                                    />
-
-                                </tr>
-                                <tr>
-                                    <td>
+                                        </td>
                                         <input
                                             className={`input-field mb-4 w-full md:ml-2`}
-                                            style={{ borderColor: passwordError ? '#EF4444' : '#E5E7EB' }}
-                                            type="password"
-                                            title='Passoword need 8 character one capital letter,number and special character'
-                                            placeholder="Password"
-                                            value={password}
-                                            onChange={handlePasswordChange}
+                                            style={{ borderColor: emailError ? '#EF4444' : '#E5E7EB' }}
+                                            type="email"
+                                            placeholder="Email"
+                                            value={email}
+                                            onChange={handleEmailChange}
                                             required
                                         />
-                                    </td>
 
-                                    <td>
-                                        <input
-                                            className={`input-field mb-4 w-full md:ml-2`}
-                                            style={{ borderColor: repeatPasswordError ? '#EF4444' : '#E5E7EB' }}
-                                            type="password"
-                                            title='Passoword need 8 character one capital letter,number and special character'
-                                            placeholder="Repeat Password"
-                                            value={repeatPassword}
-                                            onChange={handlePasswordRepeatChange}
-                                            required
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>You are</td>
-                                    <td>
-                                        <select className={`input-field mb-4 w-full md:ml-2`}
-                                            style={{ borderColor: typeOfUserError ? '#EF4444' : '#E5E7EB' }}
-                                            value={typeOfUser}
-                                            onChange={handleTypeOfUserChange}
-                                            
-                                        >
-                                            <option>Driver</option>
-                                            <option>Rider</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Profile image</td>
-                                    <td>
-                                        <input type='file'
-                                            className={`input-field mb-4 w-full md:ml-2`}
-                                            style={{ borderColor: imageUrlError ? '#EF4444' : '#E5E7EB' }}
-                                            onChange={handleImageUrlChange}
-                                            required
-                                        ></input>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colSpan={2} ><button type='submit'>Register</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input
+                                                className={`input-field mb-4 w-full md:ml-2`}
+                                                style={{ borderColor: passwordError ? '#EF4444' : '#E5E7EB' }}
+                                                type="password"
+                                                title='Passoword need 8 character one capital letter,number and special character'
+                                                placeholder="Password"
+                                                value={password}
+                                                onChange={handlePasswordChange}
+                                                required
+                                            />
+                                        </td>
+
+                                        <td>
+                                            <input
+                                                className={`input-field mb-4 w-full md:ml-2`}
+                                                style={{ borderColor: repeatPasswordError ? '#EF4444' : '#E5E7EB' }}
+                                                type="password"
+                                                title='Passoword need 8 character one capital letter,number and special character'
+                                                placeholder="Repeat Password"
+                                                value={repeatPassword}
+                                                onChange={handlePasswordRepeatChange}
+                                                required
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>You are</td>
+                                        <td>
+                                            <select className={`input-field mb-4 w-full md:ml-2`}
+                                                style={{ borderColor: typeOfUserError ? '#EF4444' : '#E5E7EB' }}
+                                                value={typeOfUser}
+                                                onChange={handleTypeOfUserChange}
+
+                                            >
+                                                <option>Driver</option>
+                                                <option>Rider</option>
+                                                <option>Admin</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Profile image</td>
+                                        <td>
+                                            <input type='file'
+                                                className={`input-field mb-4 w-full md:ml-2`}
+                                                style={{ borderColor: imageUrlError ? '#EF4444' : '#E5E7EB' }}
+                                                onChange={handleImageUrlChange}
+                                                required
+                                            ></input>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colSpan={2} ><button type='submit'>Register</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </form>
-                        <h2><span>or</span></h2>
-                        <div>
-                            <GoogleLogin
-                                clientId={clientId}
-                                buttonText='Continue with Google'
-                                onFailure={onFailure}
-                                onSuccess={onSuccess}
-                                cookiePolicy={'single_host_origin'}
-                                isSignedIn={true}
-                            ></GoogleLogin>
-                        </div>
+                        {googleRegisterView && (
+                            <>
+                                <h2><span>or</span></h2>
+                                <div>
+                                    <GoogleLogin
+                                        clientId={clientId}
+                                        buttonText='Continue with Google'
+                                        onFailure={onFailure}
+                                        onSuccess={onSuccess}
+                                        cookiePolicy={'single_host_origin'}
+                                        isSignedIn={true}
+                                    />
+                                </div>
+                            </>
+                        )}
                         <div>
                             <p className="signup-link">Have an account? &nbsp;
                                 {/* <a href="#" className="text-gray-800 font-bold">Sign up</a> */}

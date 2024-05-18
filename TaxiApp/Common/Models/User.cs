@@ -61,8 +61,10 @@ namespace Common.Models
 
 
        [DataMember]
-       public FileUploadDTO ImageFile { get; set; }    
+       public FileUploadDTO ImageFile { get; set; }
 
+       [DataMember]
+       public VerificationStatus.Status Status { get; set; }   
 
         public string ImageUrl { get; set; }
 
@@ -91,6 +93,7 @@ namespace Common.Models
                     NumOfRatings = 0;
                     SumOfRatings = 0;
                     IsBlocked = false;
+                    Status = VerificationStatus.Status.NijePoslat;
                     break;
 
             }
@@ -121,7 +124,7 @@ namespace Common.Models
             ImageFile = imageFile;
         }
 
-        public User(string address, double averageRating, int sumOfRatings, int numOfRatings, DateTime birthday, string email, bool isVerified, bool isBlocked, string firstName, string lastName, string password, string username, UserRoles.Roles typeOfUser, FileUploadDTO imageFile, string imageUrl) : this(address, averageRating, sumOfRatings, numOfRatings, birthday, email, isVerified, isBlocked, firstName, lastName, password, username, typeOfUser, imageFile)
+        public User(string address, double averageRating, int sumOfRatings, int numOfRatings, DateTime birthday, string email, bool isVerified, bool isBlocked, string firstName, string lastName, string password, string username, UserRoles.Roles typeOfUser, FileUploadDTO imageFile, string imageUrl,VerificationStatus.Status s) : this(address, averageRating, sumOfRatings, numOfRatings, birthday, email, isVerified, isBlocked, firstName, lastName, password, username, typeOfUser, imageFile)
         {
             Address = address;
             AverageRating = averageRating;
@@ -138,6 +141,7 @@ namespace Common.Models
             TypeOfUser = typeOfUser;
             ImageFile = imageFile;
             ImageUrl = imageUrl;
+            Status = s;
         }
 
         private FileUploadDTO makeFileOverNetwork(IFormFile file)

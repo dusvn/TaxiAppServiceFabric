@@ -8,18 +8,34 @@ import { FaRoad } from 'react-icons/fa';
 import { FaSignOutAlt } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
 import EditProfile from './EditProfile.jsx';
+import { GetAllDrivers } from '../Services/AdminService.js';
+import  DriversView  from './DriversView.jsx';
+
 export default function DashboardAdmin() {
     const location = useLocation();
     const user = location.state?.user;
     const [userName, setUserName] = useState(user.username);
-    
+    const [driversView,setDriversView] = useState('');
+    const [view, setView] = useState('editProfile');
 
+
+    const getAllDriversEndpoint = process.env.REACT_APP_GET_ALL_DRIVERS;
     const token = localStorage.getItem('token');
     const navigate = useNavigate();
-
+    console.log(localStorage.getItem('token'));
     const handleSignOut = () => {
         localStorage.removeItem('token');
         navigate('/');
+    };
+
+    const handleGetAllDrivers = async () => {
+        try {
+            const drivers = await GetAllDrivers(getAllDriversEndpoint, token);
+            setDriversView(drivers);
+            setView('drivers');
+        } catch (error) {
+            console.error('Error fetching drivers:', error.message);
+        }
     };
 
     return (
@@ -52,7 +68,7 @@ export default function DashboardAdmin() {
                             <span>Verify drivers</span>
                         </div>
                     </button>
-                    <button className="button">
+                    <button className="button" onClick={handleGetAllDrivers}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <FaCar size={25} style={{ marginRight: '30px' }} />
                             <span>Drivers</span>
@@ -68,7 +84,7 @@ export default function DashboardAdmin() {
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <div style={{ height: '100%', display: 'flex' }}>
                         <div style={{ width: '100%', backgroundColor: 'white' }}>
-                            <EditProfile user={user}/>
+                            {view === 'editProfile' ? <EditProfile user={user} /> : <DriversView driversView={driversView}/>}
                         </div>
                     </div>
                 </div>

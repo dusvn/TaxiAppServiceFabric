@@ -54,8 +54,14 @@ namespace Common.DTO
         [DataMember]
         public FileUploadDTO ImageFile { get; set; }
 
+        [DataMember]
+        public string Password { get; set; }
+        
+        [DataMember]
+        public VerificationStatus.Status Status { get; set; }   
 
-        public FullUserDTO(string address, double averageRating, int sumOfRatings, int numOfRatings, DateTime birthday, string email, bool isVerified, bool isBlocked, string firstName, string lastName, string username, UserRoles.Roles roles, FileUploadDTO imageFile)
+
+        public FullUserDTO(string address, double averageRating, int sumOfRatings, int numOfRatings, DateTime birthday, string email, bool isVerified, bool isBlocked, string firstName, string lastName, string username, UserRoles.Roles roles, FileUploadDTO imageFile, string password, VerificationStatus.Status status)
         {
             Address = address;
             AverageRating = averageRating;
@@ -70,6 +76,8 @@ namespace Common.DTO
             Username = username;
             Roles = roles;
             ImageFile = imageFile;
+            Password = password;
+            Status = status;
         }
 
         public FullUserDTO()

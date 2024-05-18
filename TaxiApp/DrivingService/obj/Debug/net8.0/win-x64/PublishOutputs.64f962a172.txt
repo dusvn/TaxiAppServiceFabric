@@ -181,7 +181,7 @@ C:\Users\0010\Desktop\ServiceFabric\TaxiApp\TaxiApp\pkg\Debug\DrivingServicePkg\
 C:\Users\0010\Desktop\ServiceFabric\TaxiApp\TaxiApp\pkg\Debug\DrivingServicePkg\Code\hostfxr.dll
 C:\Users\0010\Desktop\ServiceFabric\TaxiApp\TaxiApp\pkg\Debug\DrivingServicePkg\Code\hostpolicy.dll
 C:\Users\0010\Desktop\ServiceFabric\TaxiApp\TaxiApp\pkg\Debug\DrivingServicePkg\Code\mscordaccore.dll
-C:\Users\0010\Desktop\ServiceFabric\TaxiApp\TaxiApp\pkg\Debug\DrivingServicePkg\Code\mscordaccore_amd64_amd64_8.0.424.16909.dll
+C:\Users\0010\Desktop\ServiceFabric\TaxiApp\TaxiApp\pkg\Debug\DrivingServicePkg\Code\mscordaccore_amd64_amd64_8.0.524.21615.dll
 C:\Users\0010\Desktop\ServiceFabric\TaxiApp\TaxiApp\pkg\Debug\DrivingServicePkg\Code\mscordbi.dll
 C:\Users\0010\Desktop\ServiceFabric\TaxiApp\TaxiApp\pkg\Debug\DrivingServicePkg\Code\mscorrc.dll
 C:\Users\0010\Desktop\ServiceFabric\TaxiApp\TaxiApp\pkg\Debug\DrivingServicePkg\Code\msquic.dll

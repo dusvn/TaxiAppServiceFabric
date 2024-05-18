@@ -20,6 +20,12 @@ namespace Common.Interfaces
         Task<FullUserDTO> loginUser(LoginUserDTO loginUserDTO);
 
         [OperationContract] 
-        Task<List<FullUserDTO>> listUsers();   
+        Task<List<FullUserDTO>> listUsers();
+
+        [OperationContract]
+        Task<List<DriverViewDTO>> listDrivers();
+
+        [OperationContract]
+        Task<bool> changeDriverStatus(string email, bool status);
     }
 }

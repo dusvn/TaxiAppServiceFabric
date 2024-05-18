@@ -48,11 +48,12 @@ namespace Common.Entities
 
         public string Username { get; set; }
 
-        public UserRoles.Roles TypeOfUser { get; set; }
+        //azure table ne podrzava da  cuva enume 
+        public string TypeOfUser { get; set; }
 
         public string ImageUrl { get; set; }
-
-
+        //azure table ne podrzava da  cuva enume 
+        public string Status { get; set; }
         public UserEntity()
         {
         }
@@ -73,8 +74,31 @@ namespace Common.Entities
             LastName = u.LastName;
             Password = u.Password;
             Username = u.Username;
-            TypeOfUser = u.TypeOfUser;
+            TypeOfUser = u.TypeOfUser.ToString();
+            Status = u.Status.ToString();  
             ImageUrl = imageUrl; // location of image in blob
+
+        }
+
+        public UserEntity(User u)
+        {
+            RowKey = u.Username; // key username of user
+            PartitionKey = u.TypeOfUser.ToString(); // partition key je tip user-a
+            Address = u.Address;
+            AverageRating = u.AverageRating;
+            SumOfRatings = u.SumOfRatings;
+            NumOfRatings = u.NumOfRatings;
+            Birthday = u.Birthday;
+            Email = u.Email;
+            IsVerified = u.IsVerified;
+            IsBlocked = u.IsBlocked;
+            FirstName = u.FirstName;
+            LastName = u.LastName;
+            Password = u.Password;
+            Username = u.Username;
+            TypeOfUser = u.TypeOfUser.ToString();
+            Status = u.Status.ToString();
+            ImageUrl = u.ImageUrl; 
 
         }
 

@@ -11,6 +11,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using Common.Entities;
 using static System.Net.Mime.MediaTypeNames;
 using Common.Models;
+using System.Collections;
 
 
 namespace UsersService
@@ -61,6 +62,25 @@ namespace UsersService
             var q = new TableQuery<UserEntity>();
             var qRes = Users.ExecuteQuerySegmentedAsync(q, null).GetAwaiter().GetResult();
             return qRes.Results;
+        }
+        public async Task<bool> UpdateEntity(string email, bool status)
+        {
+            TableQuery<UserEntity> driverQuery = new TableQuery<UserEntity>().Where(TableQuery.GenerateFilterCondition("Email", QueryComparisons.Equal, email));
+            TableQuerySegment<UserEntity> queryResult = await Users.ExecuteQuerySegmentedAsync(driverQuery, null);
+
+            if (queryResult.Results.Count > 0)
+            {
+                UserEntity user = queryResult.Results[0]; 
+                user.IsBlocked = status;
+                var operation = TableOperation.Replace(user);
+                await Users.ExecuteAsync(operation);
+
+                return true; 
+            }
+            else
+            {
+                return false;
+            }
         }
 
 

@@ -14,6 +14,9 @@ using System.Text.RegularExpressions;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json.Linq;
+using System.Security.Claims;
 namespace WebApi.Controllers
 {
     [ApiController]
@@ -26,6 +29,11 @@ namespace WebApi.Controllers
         {
             _config = config;
         }
+
+
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> RegularRegister([FromForm] UserRegister userData)
@@ -47,7 +55,7 @@ namespace WebApi.Controllers
                 }
 
                 if (result)  return Ok($"Successfully registered new User: {userData.Username}"); 
-                else return StatusCode(500, "Failed to register new User");
+                else return StatusCode(409, "User already exists in database!");
                 
 
             }
@@ -56,37 +64,6 @@ namespace WebApi.Controllers
                 return StatusCode(500, "An error occurred while registering new User");
             }
         }
-
-        //[HttpGet]
-        //public async Task<LogedUserDTO> Login([FromBody] LoginUserDTO u)
-        //{
-
-
-        //    try
-        //    {
-
-        //        var fabricClient = new FabricClient();
-
-
-        //        var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/UsersService"));
-        //        foreach (var partition in partitionList)
-        //        {
-        //            var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
-        //            var proxy = ServiceProxy.Create<ITest>(new Uri("fabric:/TaxiApp/UsersService"), partitionKey);
-        //            var result = await proxy.loginUser(u);
-        //        }
-
-
-
-
-
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return StatusCode(500, "An error occurred while registering new User");
-        //    }
-
-        //}
 
         [HttpGet]
         public async Task<List<FullUserDTO>> GetUsers()
@@ -145,9 +122,12 @@ namespace WebApi.Controllers
                     var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
                     var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
+                    List<Claim> claims = new List<Claim>();
+                    claims.Add(new Claim("MyCustomClaim",result.Roles.ToString()));
+
                     var Sectoken = new JwtSecurityToken(_config["Jwt:Issuer"],
                         _config["Jwt:Issuer"],
-                        null,
+                        claims,
                         expires: DateTime.Now.AddMinutes(360),
                         signingCredentials: credentials);
 
@@ -170,6 +150,83 @@ namespace WebApi.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, "An error occurred while login User");
+            }
+        }
+
+        [Authorize(Policy = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllDrivers()
+        {
+            try
+            {
+
+                var fabricClient = new FabricClient();
+                List<DriverViewDTO> result = null;
+
+                var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/UsersService"));
+                foreach (var partition in partitionList)
+                {
+                    var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
+                    var proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UsersService"), partitionKey);
+                    var parititonResult = await proxy.listDrivers();
+                    if(parititonResult != null)
+                    {
+                        result = parititonResult;
+                        break;
+                    }
+                    
+                }
+
+                if (result != null)
+                {
+
+                    var response = new
+                    {
+                        drivers = result,
+                        message = "Succesfuly get list of drivers"
+                    };
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest("Incorrect email or password");
+                }
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occurred while registering new User");
+            }
+        }
+
+
+        [Authorize(Policy = "Admin")]
+        [HttpPut]
+        public async Task<IActionResult> ChangeDriverStatus([FromBody] DriverChangeStatusDTO driver)
+        {
+            try
+            {
+
+                var fabricClient = new FabricClient();
+                bool result = false;
+
+                var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/UsersService"));
+                foreach (var partition in partitionList)
+                {
+                    var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
+                    var proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UsersService"), partitionKey);
+                    bool parititonResult = await proxy.changeDriverStatus(driver.Email, driver.Status);
+                    result = parititonResult;
+                }
+
+                if (result) return Ok("Succesfuly changed driver status");
+                
+                else return BadRequest("Driver status is not changed");
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occurred while registering new User");
             }
         }
 
