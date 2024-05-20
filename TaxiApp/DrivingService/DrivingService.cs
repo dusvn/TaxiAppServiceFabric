@@ -27,9 +27,7 @@ namespace DrivingService
         /// </remarks>
         /// <returns>A collection of listeners.</returns>
         protected override IEnumerable<ServiceReplicaListener> CreateServiceReplicaListeners()
-        {
-            return new ServiceReplicaListener[0];
-        }
+    => this.CreateServiceRemotingReplicaListeners();
 
         /// <summary>
         /// This is the main entry point for your service replica.

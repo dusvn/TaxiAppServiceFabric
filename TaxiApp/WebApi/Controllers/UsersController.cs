@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json.Linq;
 using System.Security.Claims;
 using System.Runtime.InteropServices;
+using System.ComponentModel.DataAnnotations;
 namespace WebApi.Controllers
 {
     [ApiController]
@@ -323,7 +324,27 @@ namespace WebApi.Controllers
         }
 
 
+        [Authorize(Policy = "Rider")]
+        [HttpGet]
+        public async Task<IActionResult> GetEstimatedPrice([FromQuery] Trip trip)
+        {
+            double estimation = await ServiceProxy.Create<IEstimation>(new Uri("fabric:/TaxiApp/EstimationService")).GetEstimatedPrice(trip.CurrentLocation, trip.Destination);
+            if (estimation != null)
+            {
 
+                var response = new
+                {
+                    price = estimation,
+                    message = "Succesfuly get estimation"
+                };
+                return Ok(response);
+            }
+            else
+            {
+                return StatusCode(500, "An error occurred while estimating price");
+            }
+
+        }
 
         private bool IsValidEmail(string email)
         {

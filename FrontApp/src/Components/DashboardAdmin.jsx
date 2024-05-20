@@ -19,6 +19,7 @@ export default function DashboardAdmin(props) {
     const user = props.user;
     const apiEndpoint = process.env.REACT_APP_CHANGE_USER_FIELDS;
     const userId = user.id;
+    console.log(userId);
     const jwt = localStorage.getItem('token');
     const navigate = useNavigate();
 
@@ -58,6 +59,7 @@ export default function DashboardAdmin(props) {
             try {
                 const userInfo = await getUserInfo(jwt, apiForCurrentUserInfo, userId);
                 const user = userInfo.user;
+                console.log(user);
                 setUserInfo(user); // Update state with fetched user info
                 setInitialUser(user); // Set initial user info
 
@@ -130,18 +132,7 @@ export default function DashboardAdmin(props) {
 
     const handleEditProfile = async () => {
         try {
-
-
-            // const response = await getUserInfo(localStorage.getItem('token'), apiEndpointForUserInfo, userId);
-            // console.log("This is response", response);
-            // console.log("This is original user", originalUser);
-            // console.log("This is edited user", editedUser);
-
-            // setOriginalUser(response);
-            // console.log("Response:",response);
-            // setEditedUser(response);
             setView('editProfile');
-            // setIsEditing(true);
         } catch (error) {
             console.error("Error when I try to show profile", error);
         }
