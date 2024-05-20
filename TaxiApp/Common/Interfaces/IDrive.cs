@@ -13,6 +13,6 @@ namespace Common.Interfaces
     public interface IDrive : IService
     {
         [OperationContract]
-        Task<RoadTrip> AcceptRoadTrip(Guid riderId,string currentLocation,string destination);
+        Task<RoadTrip> AcceptRoadTrip(RoadTrip trip);
     }
 }

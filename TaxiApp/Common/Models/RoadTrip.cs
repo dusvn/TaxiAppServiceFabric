@@ -23,10 +23,32 @@ namespace Common.Models
         public Guid DriverId { get; set; }
 
         [DataMember]
-        public double Price { get; set; }   
+        public double Price { get; set; }
+
+        [DataMember]
+        public bool Accepted { get; set; }
+
+        [DataMember]
+        public Guid TripId { get;set; }
 
         public RoadTrip()
         {
+        }
+
+        public RoadTrip(string currentLocation, string destination, Guid riderId, Guid driverId, double price, bool accepted)
+        {
+            CurrentLocation = currentLocation;
+            Destination = destination;
+            RiderId = riderId;
+            DriverId = driverId;
+            Price = price;
+            Accepted = accepted;
+            TripId = Guid.NewGuid();
+        }
+
+        public RoadTrip(string currentLocation, string destination, Guid riderId, Guid driverId, double price, bool accepted, Guid tripId) : this(currentLocation, destination, riderId, driverId, price, accepted)
+        {
+            TripId = tripId;
         }
     }
 }

@@ -74,7 +74,6 @@ namespace Common.Models
 
         public User(UserRegister userRegister)
         {
-            Random rnd = new Random();  
             FirstName = userRegister.FirstName;
             LastName = userRegister.LastName;
             Birthday = DateTime.ParseExact(userRegister.Birthday, "yyyy-MM-dd", CultureInfo.InvariantCulture);
