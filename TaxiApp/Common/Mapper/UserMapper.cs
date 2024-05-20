@@ -39,7 +39,8 @@ namespace Common.Mapper
                         (UserRoles.Roles)Enum.Parse(typeof(UserRoles.Roles), u.PartitionKey),
                         new FileUploadDTO(imageOfUser),
                         u.ImageUrl,
-                        myStatus // Use the parsed enum value here
+                        myStatus,
+                        u.Id
                     );
                 }
             return null;
@@ -48,7 +49,7 @@ namespace Common.Mapper
         public static FullUserDTO MapUserToFullUserDto(User u)
         {
 
-            return new FullUserDTO(u.Address, u.AverageRating, u.SumOfRatings, u.NumOfRatings, u.Birthday, u.Email, u.IsVerified, u.IsBlocked, u.FirstName, u.LastName, u.Username, u.TypeOfUser, u.ImageFile,u.Password,u.Status);
+            return new FullUserDTO(u.Address, u.AverageRating, u.SumOfRatings, u.NumOfRatings, u.Birthday, u.Email, u.IsVerified, u.IsBlocked, u.FirstName, u.LastName, u.Username, u.TypeOfUser, u.ImageFile,u.Password,u.Status,u.Id);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Common.DTO
 {
     public class DriverChangeStatusDTO
     {
-        public string Email { get; set; }  
+        public Guid Id { get; set; }  
         public bool Status { get;set; }
         public DriverChangeStatusDTO() { }
     }

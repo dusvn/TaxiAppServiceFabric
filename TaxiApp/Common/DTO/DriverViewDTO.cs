@@ -27,7 +27,10 @@ namespace Common.DTO
         [DataMember]
         public double AverageRating { get; set; }
 
-        public DriverViewDTO(string email, string name, string lastName, string username, bool isBlocked, double averageRating)
+        [DataMember]
+        public Guid Id { get;set; }
+
+        public DriverViewDTO(string email, string name, string lastName, string username, bool isBlocked, double averageRating,Guid id)
         { 
             Email = email;
             Name = name;
@@ -35,6 +38,7 @@ namespace Common.DTO
             Username = username;
             IsBlocked = isBlocked;
             AverageRating = averageRating;
+            Id = id;
         }
     }
 }

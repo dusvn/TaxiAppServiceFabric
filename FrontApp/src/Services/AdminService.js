@@ -17,10 +17,10 @@ export async function GetAllDrivers(apiEndpoint, jwtToken) {
     }
 }
 
-export async function ChangeDriverStatus(apiEndpoint, email, changeStatus, jwt) {
+export async function ChangeDriverStatus(apiEndpoint, id, changeStatus, jwt) {
     try {
         const response = await axios.put(apiEndpoint, {
-            email: email,
+            id: id,
             status: changeStatus
         }, {
             headers: {

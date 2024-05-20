@@ -23,6 +23,7 @@ namespace Common.Models
         public IFormFile? ImageUrl { get; set; }
         public string? Username { get; set; }
 
+        public Guid Id { get; set; }
         public UserForUpdate()
         {
         }

@@ -17,6 +17,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json.Linq;
 using System.Security.Claims;
+using System.Runtime.InteropServices;
 namespace WebApi.Controllers
 {
     [ApiController]
@@ -25,6 +26,7 @@ namespace WebApi.Controllers
     {
 
         private IConfiguration _config;
+        
         public UsersController(IConfiguration config)
         {
             _config = config;
@@ -105,7 +107,7 @@ namespace WebApi.Controllers
             try
             {
                 var fabricClient = new FabricClient();
-                FullUserDTO result = null; // Initialize result to null
+                LogedUserDTO result = null; // Initialize result to null
 
                 var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/UsersService"));
                 foreach (var partition in partitionList)
@@ -114,7 +116,7 @@ namespace WebApi.Controllers
                     var proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UsersService"), partitionKey);
                     var partitionResult = await proxy.loginUser(user);
 
-                    if (partitionResult.Email != null)
+                    if (partitionResult != null)
                     {
                         result = partitionResult;
                         break;
@@ -219,7 +221,7 @@ namespace WebApi.Controllers
                 {
                     var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
                     var proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UsersService"), partitionKey);
-                    bool parititonResult = await proxy.changeDriverStatus(driver.Email, driver.Status);
+                    bool parititonResult = await proxy.changeDriverStatus(driver.Id, driver.Status);
                     result = parititonResult;
                 }
 
@@ -235,7 +237,7 @@ namespace WebApi.Controllers
         }
 
 
-        [Authorize(Policy = "Admin")]
+        [AllowAnonymous]
         [HttpPut]
         public async Task<IActionResult> ChangeUserFields([FromForm] UserForUpdate user)
         {
@@ -276,6 +278,52 @@ namespace WebApi.Controllers
                 return StatusCode(500, "An error occurred while updating user");
             }
         }
+
+
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> GetUserInfo([FromQuery] Guid id)
+        {
+            try
+            {
+                var fabricClient = new FabricClient();
+                FullUserDTO result = null;
+
+                var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/UsersService"));
+                foreach (var partition in partitionList)
+                {
+                    var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
+                    var proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UsersService"), partitionKey);
+                    var partitionResult = await proxy.GetUserInfo(id);
+                    if (partitionResult != null)
+                    {
+                        result = partitionResult;
+                        break;
+                    }
+                }
+
+                if (result != null)
+                {
+                    var response = new
+                    {
+                        user = result,
+                        message = "Successfully retrieved user info"
+                    };
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest("This id does not exist");
+                }
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occurred while retrieving user info");
+            }
+        }
+
+
+
 
         private bool IsValidEmail(string email)
         {

@@ -56,6 +56,8 @@ namespace Common.Entities
         //azure table ne podrzava da  cuva enume 
         public string Status { get; set; }
 
+        public Guid Id { get; set; }
+
 
         public UserEntity(User u,string imageUrl)
         {
@@ -76,6 +78,7 @@ namespace Common.Entities
             TypeOfUser = u.TypeOfUser.ToString();
             Status = u.Status.ToString();  
             ImageUrl = imageUrl; // location of image in blob
+            Id = u.Id;
 
         }
 

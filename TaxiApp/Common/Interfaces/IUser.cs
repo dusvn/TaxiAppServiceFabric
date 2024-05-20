@@ -17,7 +17,7 @@ namespace Common.Interfaces
         Task<bool> addNewUser(User user);
 
         [OperationContract]
-        Task<FullUserDTO> loginUser(LoginUserDTO loginUserDTO);
+        Task<LogedUserDTO> loginUser(LoginUserDTO loginUserDTO);
 
         [OperationContract] 
         Task<List<FullUserDTO>> listUsers();
@@ -26,9 +26,15 @@ namespace Common.Interfaces
         Task<List<DriverViewDTO>> listDrivers();
 
         [OperationContract]
-        Task<bool> changeDriverStatus(string email, bool status);
+        Task<bool> changeDriverStatus(Guid id, bool status);
 
         [OperationContract]
-        Task<FullUserDTO> changeUserFields(UserForUpdateOverNetwork user); 
+        Task<FullUserDTO> changeUserFields(UserForUpdateOverNetwork user);
+
+        [OperationContract]
+        Task<FullUserDTO> GetUserInfo(Guid id);
+    
+
+       
     }
 }

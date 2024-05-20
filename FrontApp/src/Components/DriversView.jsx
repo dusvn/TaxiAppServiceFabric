@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import '../Style/DriversView.css'; // Import your CSS file for styling
 import { ChangeDriverStatus, GetAllDrivers } from '../Services/AdminService.js';
 
-export default function DriversView(props) {
+export default function DriversView() {
     const [drivers, setDrivers] = useState([]);
     const token = localStorage.getItem('token');
     const apiEndpoint = process.env.REACT_APP_CHANGE_DRIVER_STATUS;
@@ -12,6 +12,7 @@ export default function DriversView(props) {
     const fetchDrivers = async () => {
         try {
             const data = await GetAllDrivers(getAllDriversEndpoint, token);
+            console.log("Drivers:",data);
             setDrivers(data.drivers);
         } catch (error) {
             console.error('Error fetching drivers:', error);
@@ -22,9 +23,9 @@ export default function DriversView(props) {
         fetchDrivers();
     }, []);
 
-    const handleChangeStatus = async (email, isBlocked) => {
+    const handleChangeStatus = async (id, isBlocked) => {
         try {
-            await ChangeDriverStatus(apiEndpoint, email, !isBlocked, token); // Toggle the isBlocked value
+            await ChangeDriverStatus(apiEndpoint, id, !isBlocked, token); // Toggle the isBlocked value
             await fetchDrivers(); // Refresh the list of drivers
         } catch (error) {
             console.error('Error changing driver status:', error);
@@ -32,7 +33,7 @@ export default function DriversView(props) {
     };
 
     return (
-        <div className="centered">
+        <div className="centered" style={{ width: '100%', height: '10%' }}>
             <table className="styled-table">
                 <thead>
                     <tr>
@@ -46,7 +47,7 @@ export default function DriversView(props) {
                 </thead>
                 <tbody>
                     {drivers.map((val, key) => (
-                        <tr key={val.email}>
+                        <tr key={val.id}>
                             <td>{val.name}</td>
                             <td>{val.lastName}</td>
                             <td>{val.email}</td>
@@ -54,9 +55,9 @@ export default function DriversView(props) {
                             <td>{val.averageRating}</td>
                             <td>
                                 {val.isBlocked ? (
-                                    <button className="green-button" onClick={() => handleChangeStatus(val.email, val.isBlocked)}>Unblock</button>
+                                    <button className="green-button" onClick={() => handleChangeStatus(val.id, val.isBlocked)}>Unblock</button>
                                 ) : (
-                                    <button className="red-button" onClick={() => handleChangeStatus(val.email, val.isBlocked)}>Block</button>
+                                    <button className="red-button" onClick={() => handleChangeStatus(val.id, val.isBlocked)}>Block</button>
                                 )}
                             </td>
                         </tr>

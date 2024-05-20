@@ -5,15 +5,15 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "TaxiApp", "TaxiApp\TaxiApp.sfproj", "{70FC5AFF-713A-47EF-8260-2CFBF2C801EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EstimationService", "EstimationService\EstimationService.csproj", "{A8445F75-B8AF-41BD-A4D8-F565AF50F03D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EstimationService", "EstimationService\EstimationService.csproj", "{A8445F75-B8AF-41BD-A4D8-F565AF50F03D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{19BA1C76-21B1-44D5-BBCE-A4D8DB361DEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{19BA1C76-21B1-44D5-BBCE-A4D8DB361DEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrivingService", "DrivingService\DrivingService.csproj", "{131B419A-CAB3-44DF-B524-AFF2DBE61A32}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrivingService", "DrivingService\DrivingService.csproj", "{131B419A-CAB3-44DF-B524-AFF2DBE61A32}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsersService", "UsersService\UsersService.csproj", "{EC60EC7E-9525-4FC7-94CD-3DA1833D322A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UsersService", "UsersService\UsersService.csproj", "{EC60EC7E-9525-4FC7-94CD-3DA1833D322A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "WebApi\WebApi.csproj", "{9D163DC8-8898-4277-9B2E-17F94EBF7669}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi", "WebApi\WebApi.csproj", "{9D163DC8-8898-4277-9B2E-17F94EBF7669}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

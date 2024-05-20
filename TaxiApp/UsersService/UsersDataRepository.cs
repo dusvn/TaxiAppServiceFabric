@@ -64,9 +64,10 @@ namespace UsersService
             var qRes = Users.ExecuteQuerySegmentedAsync(q, null).GetAwaiter().GetResult();
             return qRes.Results;
         }
-        public async Task<bool> UpdateEntity(string email, bool status)
+        public async Task<bool> UpdateEntity(Guid id, bool status)
         {
-            TableQuery<UserEntity> driverQuery = new TableQuery<UserEntity>().Where(TableQuery.GenerateFilterCondition("Email", QueryComparisons.Equal, email));
+            TableQuery<UserEntity> driverQuery = new TableQuery<UserEntity>()
+        .Where(TableQuery.GenerateFilterConditionForGuid("Id", QueryComparisons.Equal,id));
             TableQuerySegment<UserEntity> queryResult = await Users.ExecuteQuerySegmentedAsync(driverQuery, null);
 
             if (queryResult.Results.Count > 0)
@@ -86,7 +87,10 @@ namespace UsersService
 
         public async Task UpdateUser(UserForUpdateOverNetwork userOverNetwork,User u)
         {
-            TableQuery<UserEntity> usersQuery = new TableQuery<UserEntity>().Where(TableQuery.GenerateFilterCondition("Email", QueryComparisons.Equal, userOverNetwork.PreviousEmail));
+
+            TableQuery<UserEntity> usersQuery = new TableQuery<UserEntity>()
+       .Where(TableQuery.GenerateFilterConditionForGuid("Id", QueryComparisons.Equal, userOverNetwork.Id));
+
             TableQuerySegment<UserEntity> queryResult = await Users.ExecuteQuerySegmentedAsync(usersQuery, null);
 
             if (queryResult.Results.Count > 0)
@@ -109,7 +113,7 @@ namespace UsersService
         public async Task<byte[]> DownloadImage(UsersDataRepository dataRepo,UserEntity user,string nameOfContainer)
         {
 
-            CloudBlockBlob blob = await dataRepo.GetBlockBlobReference(nameOfContainer, $"image_{user.Username}");
+            CloudBlockBlob blob = await dataRepo.GetBlockBlobReference(nameOfContainer, $"image_{user.Id}");
     
 
             await blob.FetchAttributesAsync();

@@ -64,13 +64,17 @@ namespace Common.Models
        public FileUploadDTO ImageFile { get; set; }
 
        [DataMember]
-       public VerificationStatus.Status Status { get; set; }   
+       public VerificationStatus.Status Status { get; set; }
+
+        [DataMember]
+        public Guid Id { get; set; }
 
         public string ImageUrl { get; set; }
 
 
         public User(UserRegister userRegister)
         {
+            Random rnd = new Random();  
             FirstName = userRegister.FirstName;
             LastName = userRegister.LastName;
             Birthday = DateTime.ParseExact(userRegister.Birthday, "yyyy-MM-dd", CultureInfo.InvariantCulture);
@@ -79,6 +83,7 @@ namespace Common.Models
             Password = userRegister.Password;
             TypeOfUser = Enum.TryParse<UserRoles.Roles>(userRegister.TypeOfUser, true, out var role) ? role : UserRoles.Roles.Rider;
             Username = userRegister.Username;
+            Id = Guid.NewGuid();
             switch (TypeOfUser)
             {
                 case UserRoles.Roles.Admin:
@@ -106,7 +111,7 @@ namespace Common.Models
         {
         }
 
-        public User(string address, double averageRating, int sumOfRatings, int numOfRatings, DateTime birthday, string email, bool isVerified, bool isBlocked, string firstName, string lastName, string password, string username, UserRoles.Roles typeOfUser, FileUploadDTO imageFile)
+        public User(string address, double averageRating, int sumOfRatings, int numOfRatings, DateTime birthday, string email, bool isVerified, bool isBlocked, string firstName, string lastName, string password, string username, UserRoles.Roles typeOfUser, FileUploadDTO imageFile,Guid id)
         {
             Address = address;
             AverageRating = averageRating;
@@ -122,9 +127,10 @@ namespace Common.Models
             Username = username;
             TypeOfUser = typeOfUser;
             ImageFile = imageFile;
+            Id = id;
         }
 
-        public User(string address, double averageRating, int sumOfRatings, int numOfRatings, DateTime birthday, string email, bool isVerified, bool isBlocked, string firstName, string lastName, string password, string username, UserRoles.Roles typeOfUser, FileUploadDTO imageFile, string imageUrl,VerificationStatus.Status s) : this(address, averageRating, sumOfRatings, numOfRatings, birthday, email, isVerified, isBlocked, firstName, lastName, password, username, typeOfUser, imageFile)
+        public User(string address, double averageRating, int sumOfRatings, int numOfRatings, DateTime birthday, string email, bool isVerified, bool isBlocked, string firstName, string lastName, string password, string username, UserRoles.Roles typeOfUser, FileUploadDTO imageFile, string imageUrl,VerificationStatus.Status s,Guid id) : this(address, averageRating, sumOfRatings, numOfRatings, birthday, email, isVerified, isBlocked, firstName, lastName, password, username, typeOfUser, imageFile,id)
         {
             Address = address;
             AverageRating = averageRating;
@@ -142,6 +148,7 @@ namespace Common.Models
             ImageFile = imageFile;
             ImageUrl = imageUrl;
             Status = s;
+            Id = id;    
         }
 
         public static FileUploadDTO makeFileOverNetwork(IFormFile file)

@@ -44,13 +44,18 @@ namespace Common.Models
         [DataMember]
         public string PreviousEmail { get; set; }
 
+        [DataMember]
+        public Guid Id { get; set; }
+
         public UserForUpdateOverNetwork(UserForUpdate user)
         {
             PreviousEmail = user.PreviousEmail;
 
+            Id = user.Id;
             if(user.Address != null) Address = user.Address;
 
-            if(user.Birthday != null) Birthday = DateTime.ParseExact(user.Birthday, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            //mm-dd-yyyy
+            if(user.Birthday != null) Birthday = DateTime.ParseExact(user.Birthday, "MM-dd-yyyy", CultureInfo.InvariantCulture);
             else Birthday = DateTime.MinValue;
 
             if(user.Email != null) Email = user.Email;
@@ -59,7 +64,7 @@ namespace Common.Models
             if(user.FirstName !=null) LastName = user.LastName;
 
             if(user.LastName != null) Username = user.Username;
-            if(user.ImageUrl.Length>0) ImageFile = makeFileOverNetwork(user.ImageUrl);
+            if(user.ImageUrl !=null ) ImageFile = makeFileOverNetwork(user.ImageUrl);
 
             if(user.Password!=null) Password = user.Password;
 

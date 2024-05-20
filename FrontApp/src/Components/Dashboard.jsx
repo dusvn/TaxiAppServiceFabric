@@ -9,13 +9,11 @@ export default function Dashboard() {
   const [userName, setUserName] = useState('dusan.rs');
   const location = useLocation();
   const user = location.state?.user;
-  const userRole = user["roles"]
-  console.log("This is user:",user);
+  const userRole = user["roles"];
   const token = localStorage.getItem('token');
-  console.log(userRole);
   return (
    <div>
-     {userRole === 0 && <DashboardAdmin />}
+     {userRole === 0 && <DashboardAdmin user={user}/>}
    </div>
   );
 }
