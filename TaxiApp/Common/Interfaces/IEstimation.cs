@@ -1,4 +1,5 @@
-﻿using Microsoft.ServiceFabric.Services.Remoting;
+﻿using Common.Models;
+using Microsoft.ServiceFabric.Services.Remoting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,6 @@ namespace Common.Interfaces
     public interface IEstimation : IService
     {
         [OperationContract]
-        Task<double> GetEstimatedPrice(string currentLocation, string destination);
+        Task<Estimation> GetEstimatedPrice(string currentLocation, string destination);
     }
 }

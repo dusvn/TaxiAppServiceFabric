@@ -14,6 +14,8 @@ using Microsoft.ServiceFabric.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Common.Models;
+using Common.Interfaces;
 
 namespace WebApi
 {
@@ -44,7 +46,7 @@ namespace WebApi
                         //jwt
                         var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
                         var jwtKey = builder.Configuration.GetSection("Jwt:Key").Get<string>();
-
+                        builder.Services.AddTransient<IEmailSender,EmailSender>();
                         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                          .AddJwtBearer(options =>
                          {
@@ -91,7 +93,7 @@ namespace WebApi
                             });
 
 
-
+                        
                         var app = builder.Build();
                         if (app.Environment.IsDevelopment())
                         {

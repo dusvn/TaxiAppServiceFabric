@@ -28,11 +28,17 @@ namespace Common.Entities
         public double Price { get; set; }  
         
         public Guid TripId { get; set; } 
+
+        public int MinutesToDriverArive { get;set;}
+
+        public int MinutesToEndTrip { get;set;}
+
+        public bool IsFinished { get; set; }
         public RoadTripEntity()
         {
         }
 
-        public RoadTripEntity(Guid userId, Guid driverId, string currentLocation, string destination, bool accepted, double price, Guid triId)
+        public RoadTripEntity(Guid userId, Guid driverId, string currentLocation, string destination, bool accepted, double price, Guid triId,int minutes)
         {
             RiderId = userId;
             DriverId = driverId;
@@ -41,6 +47,11 @@ namespace Common.Entities
             Accepted = accepted;
             Price = price;
             TripId = triId;
+            RowKey = triId.ToString();
+            PartitionKey = triId.ToString();
+            MinutesToDriverArive = minutes;
+            MinutesToEndTrip = 0;
+            IsFinished = false;
         }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 using Common.Interfaces;
 using Microsoft.ServiceFabric.Services.Remoting.Runtime;
+using Common.Models;
 
 namespace EstimationService
 {
@@ -20,14 +21,20 @@ namespace EstimationService
             : base(context)
         { }
 
-        public async Task<double> GetEstimatedPrice(string currentLocation, string destination)
+        public async Task<Estimation> GetEstimatedPrice(string currentLocation, string destination)
         {
             double rangeMin = 5.0;
-            double rangeMax = 20.0; 
+            double rangeMax = 20.0;
 
             Random r = new Random();
-            return rangeMin + (rangeMax - rangeMin) * r.NextDouble();
-            
+            double price = rangeMin + (rangeMax - rangeMin) * r.NextDouble();
+
+            // Create TimeSpan objects
+            TimeSpan estimatedTimeMin = new TimeSpan(0, 1, 0); // 1 minute
+            TimeSpan estimatedTimeMax = new TimeSpan(0, 2, 0); // 2 minutes
+
+            return new Estimation(price, estimatedTimeMin, estimatedTimeMax);
+
         }
 
         /// <summary>

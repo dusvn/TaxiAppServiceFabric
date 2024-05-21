@@ -97,7 +97,7 @@ namespace Common.Models
                     NumOfRatings = 0;
                     SumOfRatings = 0;
                     IsBlocked = false;
-                    Status = VerificationStatus.Status.NijePoslat;
+                    Status = VerificationStatus.Status.Procesira;
                     break;
 
             }

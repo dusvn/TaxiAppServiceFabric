@@ -71,6 +71,8 @@ namespace UsersService
                         await dataRepo.Users.ExecuteAsync(operation);
 
 
+
+
                         await transaction.CommitAsync();
                         return true;
                     }
@@ -203,7 +205,7 @@ namespace UsersService
                     {
                         if (enumerator.Current.Value.Email == loginUserDTO.Email && enumerator.Current.Value.Password == loginUserDTO.Password)
                         {
-                            return new LogedUserDTO(enumerator.Current.Value.Id,enumerator.Current.Value.TypeOfUser);
+                            return new LogedUserDTO(enumerator.Current.Value.Id, enumerator.Current.Value.TypeOfUser);
                         }
                     }
                 }
@@ -248,7 +250,7 @@ namespace UsersService
                     {
                         if (enumerator.Current.Value.TypeOfUser == UserRoles.Roles.Driver)
                         {
-                            drivers.Add(new DriverViewDTO(enumerator.Current.Value.Email, enumerator.Current.Value.FirstName, enumerator.Current.Value.LastName, enumerator.Current.Value.Username, enumerator.Current.Value.IsBlocked, enumerator.Current.Value.AverageRating,enumerator.Current.Value.Id));
+                            drivers.Add(new DriverViewDTO(enumerator.Current.Value.Email, enumerator.Current.Value.FirstName, enumerator.Current.Value.LastName, enumerator.Current.Value.Username, enumerator.Current.Value.IsBlocked, enumerator.Current.Value.AverageRating, enumerator.Current.Value.Id,enumerator.Current.Value.Status));
                         }
                     }
                 }
@@ -348,6 +350,55 @@ namespace UsersService
 
 
             }
+        }
+
+        public async Task<bool> VerifyDriver(Guid id, string email, string action)
+        {
+            var users = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, User>>("UserEntities");
+            using (var tx = this.StateManager.CreateTransaction())
+            {
+                ConditionalValue<User> result = await users.TryGetValueAsync(tx, id);
+                if (result.HasValue)
+                {
+                    User userForChange = result.Value;
+                    if (action == "Prihvacen")
+                    {
+                        userForChange.IsVerified = true;
+                        userForChange.Status = Status.Prihvacen;
+                    }else userForChange.Status = Status.Odbijen;
+
+                    await users.SetAsync(tx, id, userForChange);
+
+                    await dataRepo.UpdateDriverStatus(id, action);
+
+                    await tx.CommitAsync();
+                    return true;
+
+                }
+                else return false;
+            }
+        }
+
+        public async Task<List<DriverViewDTO>> GetNotVerifiedDrivers()
+        {
+            var users = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, User>>("UserEntities");
+            List<DriverViewDTO> drivers = new List<DriverViewDTO>();
+            using (var tx = this.StateManager.CreateTransaction())
+            {
+                var enumerable = await users.CreateEnumerableAsync(tx);
+                using (var enumerator = enumerable.GetAsyncEnumerator())
+                {
+                    while (await enumerator.MoveNextAsync(default(CancellationToken)))
+                    {
+                        if (enumerator.Current.Value.TypeOfUser == UserRoles.Roles.Driver && enumerator.Current.Value.Status != Status.Odbijen)
+                        {
+                            drivers.Add(new DriverViewDTO(enumerator.Current.Value.Email, enumerator.Current.Value.FirstName, enumerator.Current.Value.LastName, enumerator.Current.Value.Username, enumerator.Current.Value.IsBlocked, enumerator.Current.Value.AverageRating, enumerator.Current.Value.Id, enumerator.Current.Value.Status));
+                        }
+                    }
+                }
+            }
+
+            return drivers;
         }
     }
 }

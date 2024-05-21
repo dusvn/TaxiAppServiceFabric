@@ -30,7 +30,10 @@ namespace Common.DTO
         [DataMember]
         public Guid Id { get;set; }
 
-        public DriverViewDTO(string email, string name, string lastName, string username, bool isBlocked, double averageRating,Guid id)
+        [DataMember]
+        public Common.Enums.VerificationStatus.Status Status { get; set; }
+
+        public DriverViewDTO(string email, string name, string lastName, string username, bool isBlocked, double averageRating,Guid id, Common.Enums.VerificationStatus.Status status)
         { 
             Email = email;
             Name = name;
@@ -38,6 +41,7 @@ namespace Common.DTO
             Username = username;
             IsBlocked = isBlocked;
             AverageRating = averageRating;
+            Status = status;
             Id = id;
         }
     }

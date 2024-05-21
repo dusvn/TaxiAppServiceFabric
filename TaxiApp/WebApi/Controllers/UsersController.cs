@@ -19,6 +19,8 @@ using Newtonsoft.Json.Linq;
 using System.Security.Claims;
 using System.Runtime.InteropServices;
 using System.ComponentModel.DataAnnotations;
+using System.Net.Mail;
+using Microsoft.AspNetCore.Identity.UI.Services;
 namespace WebApi.Controllers
 {
     [ApiController]
@@ -27,10 +29,11 @@ namespace WebApi.Controllers
     {
 
         private IConfiguration _config;
-        
-        public UsersController(IConfiguration config)
+        private readonly Common.Interfaces.IEmailSender emailSender;
+        public UsersController(IConfiguration config, Common.Interfaces.IEmailSender emailSender)
         {
             _config = config;
+            this.emailSender = emailSender;
         }
 
         [HttpPost]
@@ -99,6 +102,7 @@ namespace WebApi.Controllers
                 return new List<FullUserDTO>(); // Return an empty list or handle the error as needed
             }
         }
+
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginUserDTO user)
         {
@@ -328,7 +332,7 @@ namespace WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetEstimatedPrice([FromQuery] Trip trip)
         {
-            double estimation = await ServiceProxy.Create<IEstimation>(new Uri("fabric:/TaxiApp/EstimationService")).GetEstimatedPrice(trip.CurrentLocation, trip.Destination);
+            Estimation estimation = await ServiceProxy.Create<IEstimation>(new Uri("fabric:/TaxiApp/EstimationService")).GetEstimatedPrice(trip.CurrentLocation, trip.Destination);
             if (estimation != null)
             {
 
@@ -352,7 +356,189 @@ namespace WebApi.Controllers
             return Regex.IsMatch(email, pattern);
         }
 
+        [Authorize(Policy ="Rider")]
+        [HttpPut]
+        public async Task<IActionResult> AcceptSuggestedDrive([FromBody] AcceptedRoadTrip acceptedRoadTrip)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(acceptedRoadTrip.Destination)) return BadRequest("You must send destination!");
+                if (string.IsNullOrEmpty(acceptedRoadTrip.CurrentLocation)) return BadRequest("You must send location!");
+                if (acceptedRoadTrip.Accepted == true) return BadRequest("Ride cannot be automaticaly accepted!");
+                if (acceptedRoadTrip.Price == 0.0 || acceptedRoadTrip.Price < 0.0) return BadRequest("Invalid price!");
 
 
+                var fabricClient = new FabricClient();
+                RoadTrip result = null;
+                RoadTrip tripFromRider = new RoadTrip(acceptedRoadTrip.CurrentLocation, acceptedRoadTrip.Destination, acceptedRoadTrip.RiderId, acceptedRoadTrip.Price, acceptedRoadTrip.Accepted,acceptedRoadTrip.MinutesToDriverArrive);
+                var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/DrivingService"));
+                foreach (var partition in partitionList)
+                {
+                    var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
+                    var proxy = ServiceProxy.Create<IDrive>(new Uri("fabric:/TaxiApp/DrivingService"), partitionKey);
+                    var partitionResult = await proxy.AcceptRoadTrip(tripFromRider);
+                    if (partitionResult != null)
+                    {
+                        result = partitionResult;
+                        break;
+                    }
+                }
+
+                if (result != null)
+                {
+                    var response = new
+                    {
+                        Drive = result,
+                        message = "Successfully scheduled"
+                    };
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest("You already submited ticked!");
+                }
+
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occurred while accepting new drive!");
+            }
+        }
+
+
+        [Authorize(Policy = "Rider")]
+        [HttpGet]
+        public async Task<IActionResult> GetAciteTrip([FromQuery] Guid id)
+        {
+            try
+            {
+                var fabricClient = new FabricClient();
+                RoadTrip result = null;
+
+                var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/DrivingService"));
+                foreach (var partition in partitionList)
+                {
+                    var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
+                    var proxy = ServiceProxy.Create<IDrive>(new Uri("fabric:/TaxiApp/DrivingService"), partitionKey);
+                    var partitionResult = await proxy.GetCurrentRoadTrip(id);
+                    if (partitionResult != null)
+                    {
+                        result = partitionResult;
+                        break;
+                    }
+                }
+
+                if (result != null)
+                {
+                    var response = new
+                    {
+                        trip = result,
+                        message = "Successfully get current trip"
+                    };
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest("This id does not exist");
+                }
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occurred while retrieving user info");
+            }
+        }
+
+        [Authorize(Policy = "Admin")]
+        [HttpPut]
+        public async Task<IActionResult> VerifyDriver([FromBody] DriverVerificationDTO driver)
+        {
+            try
+            {
+                var fabricClient = new FabricClient();
+                bool result = false;
+
+                var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/UsersService"));
+                foreach (var partition in partitionList)
+                {
+                    var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
+                    var proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UsersService"), partitionKey);
+                    var partitionResult = await proxy.VerifyDriver(driver.Id, driver.Email, driver.Action);
+                    if (partitionResult != null)
+                    {
+                        result = partitionResult;
+                        break;
+                    }
+                }
+
+                if (result)
+                {
+                    var response = new
+                    {
+                        Verified = result,
+                        message = $"Driver with id:{driver.Id} is now changed status of verification to:{driver.Action}"
+                    };
+                    if (driver.Action == "Prihvacen") await this.emailSender.SendEmailAsync(driver.Email, "Account verification", "Successfuly verified on taxi app now you can drive!");
+                    
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest("This id does not exist");
+                }
+
+            }
+            catch
+            {
+                return BadRequest("Something went wrong!");
+            }
+        }
+
+        [Authorize(Policy ="Admin")]
+        [HttpGet]
+        public async Task<IActionResult> GetDriversForVerification()
+        {
+            try
+            {
+
+                var fabricClient = new FabricClient();
+                List<DriverViewDTO> result = null;
+
+                var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/UsersService"));
+                foreach (var partition in partitionList)
+                {
+                    var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
+                    var proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UsersService"), partitionKey);
+                    var parititonResult = await proxy.GetNotVerifiedDrivers();
+                    if (parititonResult != null)
+                    {
+                        result = parititonResult;
+                        break;
+                    }
+
+                }
+
+                if (result != null)
+                {
+
+                    var response = new
+                    {
+                        drivers = result,
+                        message = "Succesfuly get list of drivers"
+                    };
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest("Incorrect email or password");
+                }
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "An error occurred while registering new User");
+            }
+        }
+      
     }
 }

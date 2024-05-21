@@ -16,6 +16,7 @@ using Common.Entities;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Table;
 using System.Transactions;
+using Microsoft.ServiceFabric.Data;
 namespace DrivingService
 {
     /// <summary>
@@ -44,24 +45,23 @@ namespace DrivingService
                         using (var enumerator = enumerable.GetAsyncEnumerator())
                         {
 
-                            await roadTrips.AddAsync(tx, trip.TripId,trip);
+                            await roadTrips.AddAsync(tx, trip.TripId, trip);
 
 
-                            RoadTripEntity entity = new RoadTripEntity(trip.RiderId, trip.DriverId, trip.CurrentLocation, trip.Destination, trip.Accepted, trip.Price, trip.TripId);
+                            RoadTripEntity entity = new RoadTripEntity(trip.RiderId, trip.DriverId, trip.CurrentLocation, trip.Destination, trip.Accepted, trip.Price, trip.TripId, trip.MinutesToDriverArrive);
                             TableOperation operation = TableOperation.Insert(entity);
                             await dataRepo.Trips.ExecuteAsync(operation);
-                            ////insert user in database
-                            //UserEntity newUser = new UserEntity(user, imageUrl);
-                            //TableOperation operation = TableOperation.Insert(newUser);
-                            //await dataRepo.Users.ExecuteAsync(operation);
 
-
-                            //await transaction.CommitAsync();
-                            //return true;
+                            ConditionalValue<RoadTrip> result = await roadTrips.TryGetValueAsync(tx, trip.TripId);
+                            await tx.CommitAsync();
+                            return result.Value;
+                            
                         }
+
                     }
+                    else return null;
+                    
                 }
-                return new RoadTrip();
             }
             catch (Exception)
             {
@@ -83,8 +83,8 @@ namespace DrivingService
                     {
                         while (await enumerator.MoveNextAsync(default(CancellationToken)))
                         {
-                            if (enumerator.Current.Value.TripId == trip.TripId)
-                            {
+                            if ((enumerator.Current.Value.RiderId == trip.RiderId && enumerator.Current.Value.Accepted == false)) // provera da li je pokusao da posalje novi zahtev za voznju
+                            {                                                                                                    // a da mu ostali svi nisu izvrseni 
                                 return true;
                             }
                         }
@@ -170,6 +170,36 @@ namespace DrivingService
 
                 await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
             }
+        }
+
+        public async Task<RoadTrip> GetCurrentRoadTrip(Guid id)
+        {
+            var roadTrip = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, RoadTrip>>("Trips");
+            try
+            {
+                using (var tx = StateManager.CreateTransaction())
+                {
+
+                    var enumerable = await roadTrip.CreateEnumerableAsync(tx);
+
+                    using (var enumerator = enumerable.GetAsyncEnumerator())
+                    {
+                        while (await enumerator.MoveNextAsync(default(CancellationToken)))
+                        {
+                            if ((enumerator.Current.Value.RiderId == id && enumerator.Current.Value.IsFinished == false)) 
+                            {                                                                                                   
+                                return new RoadTrip(enumerator.Current.Value.CurrentLocation, enumerator.Current.Value.Destination, enumerator.Current.Value.RiderId, enumerator.Current.Value.DriverId, enumerator.Current.Value.Price, enumerator.Current.Value.Accepted, enumerator.Current.Value.TripId, enumerator.Current.Value.MinutesToDriverArrive, enumerator.Current.Value.MinutesToEndTrip, enumerator.Current.Value.IsFinished);
+                            }
+                        }
+                    }
+                }
+                return null;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
         }
     }
 }

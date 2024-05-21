@@ -12,7 +12,7 @@ import DriversView from './DriversView.jsx';
 import '../Style/Profile.css';
 import { makeImage, convertDateTimeToDateOnly, changeUserFields } from '../Services/ProfileService';
 import { getUserInfo } from '../Services/ProfileService';
-
+import VerifyDrivers from './VerifyDrivers.jsx';
 
 export default function DashboardAdmin(props) {
 
@@ -129,6 +129,14 @@ export default function DashboardAdmin(props) {
         }
     };
 
+    const handleShowDriversForVerification = async () => {
+        try {
+            setView('verify');
+        } catch (error) {
+            console.error('Error fetching drivers:', error.message);
+        }
+    };
+
 
     const handleEditProfile = async () => {
         try {
@@ -201,7 +209,7 @@ export default function DashboardAdmin(props) {
                             <span>Profile</span>
                         </div>
                     </button>
-                    <button className="button">
+                    <button className="button" onClick={handleShowDriversForVerification}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <FaCheckCircle size={25} style={{ marginRight: '30px' }} />
                             <span>Verify drivers</span>
@@ -326,6 +334,8 @@ export default function DashboardAdmin(props) {
                             </div>
                         ) : view === 'drivers' ? (
                             <DriversView />
+                        ) : view=='verify' ? (
+                            <VerifyDrivers/>
                         ) : null}
                     </div>
 

@@ -330,6 +330,8 @@ C:\Users\0010\Desktop\ServiceFabric\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\PubT
 C:\Users\0010\Desktop\ServiceFabric\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\PubTmp\Out\aspnetcorev2_inprocess.dll
 C:\Users\0010\Desktop\ServiceFabric\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\PubTmp\Out\Azure.Core.dll
 C:\Users\0010\Desktop\ServiceFabric\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\PubTmp\Out\Azure.Data.Tables.dll
+C:\Users\0010\Desktop\ServiceFabric\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\PubTmp\Out\BouncyCastle.Cryptography.dll
+C:\Users\0010\Desktop\ServiceFabric\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\PubTmp\Out\MailKit.dll
 C:\Users\0010\Desktop\ServiceFabric\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\PubTmp\Out\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\0010\Desktop\ServiceFabric\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\PubTmp\Out\Microsoft.Bcl.AsyncInterfaces.dll
 C:\Users\0010\Desktop\ServiceFabric\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\PubTmp\Out\Microsoft.IdentityModel.Abstractions.dll
@@ -357,6 +359,7 @@ C:\Users\0010\Desktop\ServiceFabric\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\PubT
 C:\Users\0010\Desktop\ServiceFabric\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\PubTmp\Out\Microsoft.ServiceFabric.FabricTransport.dll
 C:\Users\0010\Desktop\ServiceFabric\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\PubTmp\Out\Microsoft.ServiceFabric.Services.dll
 C:\Users\0010\Desktop\ServiceFabric\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\PubTmp\Out\Microsoft.ServiceFabric.Services.Remoting.dll
+C:\Users\0010\Desktop\ServiceFabric\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\PubTmp\Out\MimeKit.dll
 C:\Users\0010\Desktop\ServiceFabric\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\PubTmp\Out\Newtonsoft.Json.dll
 C:\Users\0010\Desktop\ServiceFabric\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\PubTmp\Out\Swashbuckle.AspNetCore.Swagger.dll
 C:\Users\0010\Desktop\ServiceFabric\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\PubTmp\Out\Swashbuckle.AspNetCore.SwaggerGen.dll

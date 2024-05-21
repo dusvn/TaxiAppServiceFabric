@@ -33,7 +33,12 @@ namespace Common.Interfaces
 
         [OperationContract]
         Task<FullUserDTO> GetUserInfo(Guid id);
-    
+
+        [OperationContract]
+        Task<bool> VerifyDriver(Guid id,string email,string action);
+
+        [OperationContract]
+        Task<List<DriverViewDTO>> GetNotVerifiedDrivers();
 
        
     }
