@@ -3,18 +3,93 @@ import { MdPerson } from 'react-icons/md';
 import { FaCar } from 'react-icons/fa';
 import { FaRoad } from 'react-icons/fa';
 import { FaSignOutAlt } from 'react-icons/fa';
+import { MdConfirmationNumber } from 'react-icons/md';
 import { useNavigate } from "react-router-dom";
 import { makeImage, convertDateTimeToDateOnly, changeUserFields } from '../Services/ProfileService';
 import { getUserInfo } from '../Services/ProfileService';
-import NewDrive from './NewDrive';
-
+import '../Style/NewDrive.css';
+import { getEstimation, AcceptDrive, convertTimeStringToMinutes } from '../Services/Estimation.js';
+import {getCurrentRide} from '../Services/RiderService.js';
 export default function RiderDashboard(props) {
     const user = props.user;
-    const userId = user.id;
+
     const jwt = localStorage.getItem('token');
     const navigate = useNavigate();
     const apiEndpoint = process.env.REACT_APP_CHANGE_USER_FIELDS;
     const apiForCurrentUserInfo = process.env.REACT_APP_GET_USER_INFO;
+
+
+    const apiEndpointEstimation = process.env.REACT_APP_GET_ESTIMATION_PRICE;
+    const apiEndpointAcceptDrive = process.env.REACT_APP_ACCEPT_SUGGESTED_DRIVE;
+    const apiEpointGetCurrentDrive= process.env.REACT_APP_GET_ACTIVE_TRIP;
+
+    const [destination, setDestination] = useState(''); // destination 
+    const [currentLocation, setCurrentLocation] = useState(''); // current location
+    const [estimation, setEstimation] = useState(''); // price of drive 
+    const [isAccepted, setIsAccepted] = useState(false);
+    const [estimatedTime, setEstimatedTime] = useState('');
+    const [driversArivalSeconds, setDriversArivalSeconds] = useState('');
+    const [tripTicketSubmited, setTripTicketSubmited] = useState(false);
+    const userId = user.id; // user id 
+    {/*This is data for drive */ }
+
+    const [activeDestination,setActiveDestination] = useState('');
+    const [activeLocation,setActiveLocation] = useState('');
+    const [activePrice,setActivePrice]= useState(0);
+    const [activeIsAccepted,setActiveIsAccepted] = useState(false);
+    const [activeMinutesToArrive,setActiveMinutesToArrive] = useState(1);
+    const [activeMinutesToEndTrip,setActiveMinutesToEndTrip] = useState(1);
+
+ 
+
+
+
+
+    const handleEstimationSubmit = async () => {
+        try {
+            if (destination == '' || currentLocation == '') alert("Please complete form!");
+            else {
+                const data = await getEstimation(localStorage.getItem('token'), apiEndpointEstimation, currentLocation, destination);
+                console.log("This is estimated price and time:", data);
+
+                const roundedPrice = parseFloat(data.price.estimatedPrice).toFixed(2);
+                console.log(typeof driversArivalSeconds);
+                setDriversArivalSeconds(convertTimeStringToMinutes(data.price.driversArivalSeconds));
+                setEstimation(roundedPrice);
+
+            }
+
+        } catch (error) {
+            console.error("Error when I try to show profile", error);
+        }
+    };
+
+    const handleAcceptDriveSubmit = async () => {
+        try {
+            console.log("usao");
+            const data = await AcceptDrive(apiEndpointAcceptDrive, userId, jwt, currentLocation, destination, estimation, isAccepted, driversArivalSeconds);
+            console.log("This is data", data);
+            if (data.message && data.message == "Request failed with status code 400") {
+                alert("You have already submited tiket!");
+            }
+            console.log("Result from creating new drive", data);
+        } catch (error) {
+            console.error("Error when I try to show profile", error);
+        }
+    };
+
+
+    const handleLocationChange = (event) => {
+        setCurrentLocation(event.target.value);
+    };
+
+    const handleDestinationChange = (event) => {
+        setDestination(event.target.value);
+    };
+
+
+
+
     const [currentUser, setUserInfo] = useState('');
 
     const [address, setAddress] = useState('');
@@ -34,6 +109,7 @@ export default function RiderDashboard(props) {
     const [username, setUsername] = useState('');
 
     const [view, setView] = useState('editProfile');
+    console.log(view);
     const [isEditing, setIsEditing] = useState(false);
 
     //pw repeat
@@ -82,13 +158,30 @@ export default function RiderDashboard(props) {
         setIsEditing(true);
     };
 
-    const handleNewDriveClick = () =>{
+    const handleNewDriveClick = () => {
         setView('newDrive');
+        
     }
 
-    const handleEditProfile = () =>{
+    const handleEditProfile = () => {
         setView('editProfile');
     }
+
+    const handleGetActiveTrip = async () => {
+        try {
+
+                const data = await getCurrentRide(jwt,apiEpointGetCurrentDrive,userId);
+                console.log("This is current ride:", data);
+            
+        } catch (error) {
+            console.error("Error when I try to show profile", error);
+        }
+    };
+    const handleCurrentTicket = async () => {
+        setView('currentTicket');
+        const data = await handleGetActiveTrip();
+    }
+
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -193,8 +286,14 @@ export default function RiderDashboard(props) {
                             <span>Driving history</span>
                         </div>
                     </button>
+                    <button className="button" onClick={handleCurrentTicket}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <MdConfirmationNumber size={25} style={{ marginRight: '30px' }} />
+                            <span>Current ticket</span>
+                        </div>
+                    </button>
                 </div>
-    
+
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <div style={{ height: '100%', display: 'flex' }}>
                         {view === "editProfile" ? (
@@ -296,7 +395,161 @@ export default function RiderDashboard(props) {
                                 </div>
                             </div>
                         ) : view == 'newDrive' ? (
-                            <NewDrive></NewDrive>
+
+
+                            <div style={{
+                                width: '100%',
+                                height: '100vh',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                backgroundColor: 'white'
+                            }}>
+                                <div className="centered" style={{
+                                    width: '30%',
+                                    height: '60%',
+                                    margin: '50px',
+                                    padding: '20px',
+                                    backgroundColor: 'black',
+                                    borderRadius: '10px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    color: 'white'
+                                }}>
+                                    <div style={{
+                                        fontSize: '40px',
+                                        textAlign: 'left',
+
+                                    }}>
+                                        Go anywhere with
+                                    </div>
+                                    <div style={{
+                                        fontSize: '40px',
+                                        textAlign: 'left',
+                                        marginBottom: '20px',
+                                        marginRight: '235px'
+                                    }}>
+                                        Taxi
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="Enter location"
+                                        style={{
+                                            width: '80%',
+                                            margin: '10px 0',
+                                            padding: '10px',
+                                            borderRadius: '5px',
+                                            border: 'none',
+                                            backgroundColor: 'black',
+                                            boxShadow: '0 0 0 1px white inset'
+                                        }}
+                                        onChange={handleLocationChange}
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Enter destination"
+                                        style={{
+                                            width: '80%',
+                                            margin: '10px 0',
+                                            padding: '10px',
+                                            borderRadius: '5px',
+                                            border: 'none',
+                                            backgroundColor: 'black',
+                                            boxShadow: '0 0 0 1px white inset'
+                                        }}
+                                        onChange={handleDestinationChange}
+                                    />
+                                    <button
+                                        style={{
+                                            width: '80%',
+                                            margin: '10px 0',
+                                            padding: '10px',
+                                            borderRadius: '5px',
+                                            border: 'none',
+                                            backgroundColor: 'white',
+                                            color: 'black',
+                                            cursor: 'pointer'
+                                        }}
+                                        onClick={handleEstimationSubmit}
+                                    >
+                                        See Price
+                                    </button>
+                                    <input
+                                        type="text"
+                                        value={`Estimated price is: ${estimation}\u20AC`}
+                                        style={{
+                                            width: '80%',
+                                            margin: '10px 0',
+                                            padding: '10px',
+                                            borderRadius: '5px',
+                                            border: 'none',
+                                            backgroundColor: 'black',
+                                            boxShadow: '0 0 0 1px white inset'
+                                        }}
+                                    />
+                                    <input
+                                        type="text"
+                                        value={`Estimated time of waiting: ${driversArivalSeconds} minute`}
+                                        style={{
+                                            width: '80%',
+                                            margin: '10px 0',
+                                            padding: '10px',
+                                            borderRadius: '5px',
+                                            border: 'none',
+                                            backgroundColor: 'black',
+                                            boxShadow: '0 0 0 1px white inset'
+                                        }}
+                                    />
+                                    {estimation !== '' && driversArivalSeconds != '' && (
+                                        <button
+                                            style={{
+                                                width: '80%',
+                                                margin: '10px 0',
+                                                padding: '10px',
+                                                borderRadius: '5px',
+                                                border: 'none',
+                                                backgroundColor: 'white',
+                                                color: 'black',
+                                                cursor: 'pointer'
+                                            }}
+                                            onClick={handleAcceptDriveSubmit}
+                                        >
+                                            Accept
+                                        </button>
+                                    )}
+
+                                </div>
+                            </div>
+                        ) : view == "currentTicket" ? (
+                 
+
+                            <div className="centered" style={{ width: '100%', height: '10%' }}>
+                                <table className="styled-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Destination</th>
+                                            <th>Current Location</th>
+                                            <th>Price</th>
+                                            <th>Is Ticket Accepted</th>
+                                            <th>Minutes To Driver Arrive</th>
+                                            <th>Minutes To End Trip</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            {/* <td>{destination}</td>
+                                            <td>{currentLocation}</td>
+                                            <td>{price}</td>
+                                            <td>{isTicketAccepted ? 'Yes' : 'No'}</td>
+                                            <td>{minutesToDriverArrive}</td>
+                                            <td>{minutesToEndTrip}</td> */}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+
                         ) : null}
                     </div>
                 </div>
