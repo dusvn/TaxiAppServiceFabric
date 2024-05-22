@@ -53,5 +53,27 @@ namespace DrivingService
             var qRes = Trips.ExecuteQuerySegmentedAsync(q, null).GetAwaiter().GetResult();
             return qRes.Results;
         }
+
+        public async Task<bool> UpdateEntity(Guid driverId, Guid rideId)
+        {
+            TableQuery<RoadTripEntity> rideQuery = new TableQuery<RoadTripEntity>()
+        .Where(TableQuery.GenerateFilterConditionForGuid("TripId", QueryComparisons.Equal, rideId));
+            TableQuerySegment<RoadTripEntity> queryResult = await Trips.ExecuteQuerySegmentedAsync(rideQuery, null);
+
+            if (queryResult.Results.Count > 0)
+            {
+                RoadTripEntity trip = queryResult.Results[0];
+                trip.Accepted = true;
+                trip.MinutesToDriverArive = 1;
+                trip.DriverId = driverId;
+                var operation = TableOperation.Replace(trip);
+                await Trips.ExecuteAsync(operation);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

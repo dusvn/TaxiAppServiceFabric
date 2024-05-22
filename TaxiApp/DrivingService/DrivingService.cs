@@ -201,5 +201,75 @@ namespace DrivingService
             }
 
         }
+
+        public async Task<List<RoadTrip>> GetRoadTrips()
+        {
+            var roadTrip = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, RoadTrip>>("Trips");
+            List<RoadTrip> notCompletedTrips = new List<RoadTrip>();
+            Guid forCompare = new Guid("00000000-0000-0000-0000-000000000000");
+            try
+            {
+                using (var tx = StateManager.CreateTransaction())
+                {
+
+                    var enumerable = await roadTrip.CreateEnumerableAsync(tx);
+
+                    using (var enumerator = enumerable.GetAsyncEnumerator())
+                    {
+                        while (await enumerator.MoveNextAsync(default(CancellationToken)))
+                        {
+                            if (enumerator.Current.Value.DriverId == forCompare)
+                            {
+                                notCompletedTrips.Add(enumerator.Current.Value);
+                            }
+                        }
+                    }
+                    await tx.CommitAsync();
+                }
+                
+                return notCompletedTrips;
+            }
+           
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<RoadTrip> AcceptRoadTripDriver(Guid rideId, Guid driverId)
+        {
+            var roadTrip = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, RoadTrip>>("Trips");
+            Guid forCompare = new Guid("00000000-0000-0000-0000-000000000000");
+            try
+            {
+                using (var tx = StateManager.CreateTransaction())
+                {
+                    ConditionalValue<RoadTrip> result = await roadTrip.TryGetValueAsync(tx, rideId);
+
+                    if (result.HasValue && result.Value.DriverId == forCompare)
+                    {
+                        // azuriranje polja u reliable 
+                        RoadTrip tripForAccept = result.Value;
+                        tripForAccept.MinutesToEndTrip = 1;
+                        tripForAccept.DriverId = driverId;
+                        tripForAccept.Accepted = true;
+                        await roadTrip.SetAsync(tx, tripForAccept.TripId, tripForAccept);
+                        if (await dataRepo.UpdateEntity(driverId, rideId))
+                        {
+                            await tx.CommitAsync();
+                            return tripForAccept;
+                        }
+                        else return null;
+                    }
+                    else return null;
+
+                }
+            }
+
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

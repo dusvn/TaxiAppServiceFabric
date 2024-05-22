@@ -17,5 +17,11 @@ namespace Common.Interfaces
 
         [OperationContract]
         Task<RoadTrip> GetCurrentRoadTrip(Guid id);
+
+        [OperationContract]
+        Task<List<RoadTrip>> GetRoadTrips();
+
+        [OperationContract]
+        Task<RoadTrip> AcceptRoadTripDriver(Guid rideId, Guid driverId);
     }
 }

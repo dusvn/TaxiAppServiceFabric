@@ -210,7 +210,7 @@ namespace UsersService
                     }
                 }
             }
-            return new LogedUserDTO();
+            return null;
         }
 
 

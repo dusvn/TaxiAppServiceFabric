@@ -40,6 +40,8 @@ namespace Common.Interfaces
         [OperationContract]
         Task<List<DriverViewDTO>> GetNotVerifiedDrivers();
 
+
+
        
     }
 }
