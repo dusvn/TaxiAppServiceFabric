@@ -38,7 +38,6 @@ export default function VerifyDrivers() {
         try {
             const data = await VerifyDriver(verifyDriversEndpoint, id, "Odbijen", email, token);
             console.log("Drivers for verify:", data);
-            //setDrivers(data.drivers);
         } catch (error) {
             console.error('Error fetching drivers:', error);
         }
@@ -46,7 +45,7 @@ export default function VerifyDrivers() {
 
     useEffect(() => {
         fetchDrivers();
-    }, []);
+    }, [drivers]);
 
     return (
         <div className="centered" style={{ width: '100%', height: '10%' }}>
