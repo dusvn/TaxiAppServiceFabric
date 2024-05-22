@@ -32,7 +32,7 @@ export default function Login() {
           if("Login successful" == responseOfLogin.message){
             localStorage.setItem('token', responseOfLogin.token);
             navigate("/Dashboard", { state: { user: responseOfLogin.user } });       
-          }
+          }else alert('Invalid password or email try again!');
         })
         .catch((error) => {
           console.error("Error in login:", error);
