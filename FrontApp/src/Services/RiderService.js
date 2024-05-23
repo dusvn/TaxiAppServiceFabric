@@ -14,6 +14,7 @@ export async function getCurrentRide(jwt, apiEndpoint,userId) {
 
         const url = `${apiEndpoint}?${queryParams}`;
         const response = await axios.get(url, config);
+        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error('Error fetching data (async/await):', error.message);

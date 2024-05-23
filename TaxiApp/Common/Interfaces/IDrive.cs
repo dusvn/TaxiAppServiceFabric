@@ -26,5 +26,15 @@ namespace Common.Interfaces
 
         [OperationContract]
         Task<bool> FinishTrip(Guid tripId);
+
+        [OperationContract] 
+        Task<List<RoadTrip>> GetListOfCompletedRidesForDriver(Guid driverId);
+
+        [OperationContract]
+        Task<List<RoadTrip>> GetListOfCompletedRidesForRider(Guid driverId);
+
+
+        [OperationContract]
+        Task<List<RoadTrip>> GetListOfCompletedRidesAdmin();
     }
 }

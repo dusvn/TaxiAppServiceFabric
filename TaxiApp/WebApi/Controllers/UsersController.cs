@@ -64,12 +64,12 @@ namespace WebApi.Controllers
                     result = await proxy.addNewUser(userForRegister);
                 }
 
-                if (result)  return Ok($"Successfully registered new User: {userData.Username}"); 
+                if (result) return Ok($"Successfully registered new User: {userData.Username}");
                 else return StatusCode(409, "User already exists in database!");
-                
+
 
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return StatusCode(500, "An error occurred while registering new User");
             }
@@ -134,7 +134,7 @@ namespace WebApi.Controllers
                     var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
                     List<Claim> claims = new List<Claim>();
-                    claims.Add(new Claim("MyCustomClaim",result.Roles.ToString()));
+                    claims.Add(new Claim("MyCustomClaim", result.Roles.ToString()));
 
                     var Sectoken = new JwtSecurityToken(_config["Jwt:Issuer"],
                         _config["Jwt:Issuer"],
@@ -180,12 +180,12 @@ namespace WebApi.Controllers
                     var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
                     var proxy = ServiceProxy.Create<IUser>(new Uri("fabric:/TaxiApp/UsersService"), partitionKey);
                     var parititonResult = await proxy.listDrivers();
-                    if(parititonResult != null)
+                    if (parititonResult != null)
                     {
                         result = parititonResult;
                         break;
                     }
-                    
+
                 }
 
                 if (result != null)
@@ -231,7 +231,7 @@ namespace WebApi.Controllers
                 }
 
                 if (result) return Ok("Succesfuly changed driver status");
-                
+
                 else return BadRequest("Driver status is not changed");
 
             }
@@ -356,7 +356,7 @@ namespace WebApi.Controllers
             return Regex.IsMatch(email, pattern);
         }
 
-        [Authorize(Policy ="Rider")]
+        [Authorize(Policy = "Rider")]
         [HttpPut]
         public async Task<IActionResult> AcceptSuggestedDrive([FromBody] AcceptedRoadTrip acceptedRoadTrip)
         {
@@ -370,7 +370,7 @@ namespace WebApi.Controllers
 
                 var fabricClient = new FabricClient();
                 RoadTrip result = null;
-                RoadTrip tripFromRider = new RoadTrip(acceptedRoadTrip.CurrentLocation, acceptedRoadTrip.Destination, acceptedRoadTrip.RiderId, acceptedRoadTrip.Price, acceptedRoadTrip.Accepted,acceptedRoadTrip.MinutesToDriverArrive);
+                RoadTrip tripFromRider = new RoadTrip(acceptedRoadTrip.CurrentLocation, acceptedRoadTrip.Destination, acceptedRoadTrip.RiderId, acceptedRoadTrip.Price, acceptedRoadTrip.Accepted, acceptedRoadTrip.MinutesToDriverArrive);
                 var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/DrivingService"));
                 foreach (var partition in partitionList)
                 {
@@ -479,7 +479,7 @@ namespace WebApi.Controllers
                         message = $"Driver with id:{driver.Id} is now changed status of verification to:{driver.Action}"
                     };
                     if (driver.Action == "Prihvacen") await this.emailSender.SendEmailAsync(driver.Email, "Account verification", "Successfuly verified on taxi app now you can drive!");
-                    
+
                     return Ok(response);
                 }
                 else
@@ -517,7 +517,7 @@ namespace WebApi.Controllers
                     }
                 }
 
-                if (result!=null)
+                if (result != null)
                 {
                     var response = new
                     {
@@ -582,7 +582,7 @@ namespace WebApi.Controllers
         }
 
 
-        [Authorize(Policy ="Admin")]
+        [Authorize(Policy = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetDriversForVerification()
         {
@@ -629,11 +629,12 @@ namespace WebApi.Controllers
         }
 
 
-        [Authorize(Policy="Driver")]
+        [Authorize(Policy = "Driver")]
         [HttpGet]
         public async Task<IActionResult> GetAllUncompletedRides()
         {
-           try{
+            try
+            {
 
                 var fabricClient = new FabricClient();
                 List<RoadTrip> result = null;
@@ -671,6 +672,144 @@ namespace WebApi.Controllers
             catch (Exception)
             {
                 return StatusCode(500, "An error occurred while registering new User");
+            }
+        }
+
+        [Authorize(Policy = "Driver")]
+        [HttpGet]
+        public async Task<IActionResult> GetCompletedRidesForDriver([FromQuery] Guid id)
+        {
+            try
+            {
+
+                var fabricClient = new FabricClient();
+                List<RoadTrip> result = null;
+
+                var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/DrivingService"));
+                foreach (var partition in partitionList)
+                {
+                    var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
+                    var proxy = ServiceProxy.Create<IDrive>(new Uri("fabric:/TaxiApp/DrivingService"), partitionKey);
+                    var parititonResult = await proxy.GetListOfCompletedRidesForDriver(id);
+                    if (parititonResult != null)
+                    {
+                        result = parititonResult;
+                        break;
+                    }
+
+                }
+
+                if (result != null)
+                {
+
+                    var response = new
+                    {
+                        rides = result,
+                        message = "Succesfuly get list completed rides"
+                    };
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest("Incorrect email or password");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [Authorize(Policy = "Rider")]
+        [HttpGet]
+        public async Task<IActionResult> GetCompletedRidesForRider([FromQuery] Guid id)
+        {
+            try
+            {
+
+                var fabricClient = new FabricClient();
+                List<RoadTrip> result = null;
+
+                var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/DrivingService"));
+                foreach (var partition in partitionList)
+                {
+                    var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
+                    var proxy = ServiceProxy.Create<IDrive>(new Uri("fabric:/TaxiApp/DrivingService"), partitionKey);
+                    var parititonResult = await proxy.GetListOfCompletedRidesForRider(id);
+                    if (parititonResult != null)
+                    {
+                        result = parititonResult;
+                        break;
+                    }
+
+                }
+
+                if (result != null)
+                {
+
+                    var response = new
+                    {
+                        rides = result,
+                        message = "Succesfuly get list completed rides"
+                    };
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest("Incorrect email or password");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [Authorize(Policy = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> GetCompletedRidesAdmin()
+        {
+            try
+            {
+
+                var fabricClient = new FabricClient();
+                List<RoadTrip> result = null;
+
+                var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/DrivingService"));
+                foreach (var partition in partitionList)
+                {
+                    var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
+                    var proxy = ServiceProxy.Create<IDrive>(new Uri("fabric:/TaxiApp/DrivingService"), partitionKey);
+                    var parititonResult = await proxy.GetListOfCompletedRidesAdmin();
+                    if (parititonResult != null)
+                    {
+                        result = parititonResult;
+                        break;
+                    }
+
+                }
+
+                if (result != null)
+                {
+
+                    var response = new
+                    {
+                        rides = result,
+                        message = "Succesfuly get list completed rides"
+                    };
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest("Incorrect email or password");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
     }

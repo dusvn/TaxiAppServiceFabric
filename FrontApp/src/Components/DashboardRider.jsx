@@ -35,10 +35,10 @@ export default function RiderDashboard(props) {
 
     const [activeDestination,setActiveDestination] = useState('');
     const [activeLocation,setActiveLocation] = useState('');
-    const [activePrice,setActivePrice]= useState(0);
+    const [activePrice,setActivePrice]= useState('');
     const [activeIsAccepted,setActiveIsAccepted] = useState(false);
-    const [activeMinutesToArrive,setActiveMinutesToArrive] = useState(1);
-    const [activeMinutesToEndTrip,setActiveMinutesToEndTrip] = useState(1);
+    const [activeMinutesToArrive,setActiveMinutesToArrive] = useState('');
+    const [activeMinutesToEndTrip,setActiveMinutesToEndTrip] = useState('');
 
  
 
@@ -67,10 +67,12 @@ export default function RiderDashboard(props) {
     const handleAcceptDriveSubmit = async () => {
         try {
             console.log("usao");
-            const data = await AcceptDrive(apiEndpointAcceptDrive, userId, jwt, currentLocation, destination, estimation, isAccepted, driversArivalSeconds);
+            const data = await AcceptDrive(apiEndpointAcceptDrive, userId, jwt, currentLocation, destination, estimation, isAccepted, driversArivalSeconds);     
+            setView('currentTicket');
             console.log("This is data", data);
             if (data.message && data.message == "Request failed with status code 400") {
                 alert("You have already submited tiket!");
+                setView('currentTicket');
             }
             console.log("Result from creating new drive", data);
         } catch (error) {
@@ -170,17 +172,23 @@ export default function RiderDashboard(props) {
     const handleGetActiveTrip = async () => {
         try {
 
-                const data = await getCurrentRide(jwt,apiEpointGetCurrentDrive,userId);
-                console.log("This is current ride:", data);
-            
+                const data = await getCurrentRide(jwt,apiEpointGetCurrentDrive,userId); 
+                return data;
         } catch (error) {
             console.error("Error when I try to show profile", error);
         }
     };
     const handleCurrentTicket = async () => {
-        setView('currentTicket');
-        const data = await handleGetActiveTrip();
-    }
+        try {
+            setView('currentTicket');
+            
+        } catch (error) {
+            console.error('Error fetching trip data:', error);
+            // Handle the error (e.g., show an error message to the user)
+        }
+    };
+    
+    //trip koji treba da se usefetchuje 
 
 
     const handleImageChange = (e) => {
@@ -222,6 +230,7 @@ export default function RiderDashboard(props) {
         const fetchUserInfo = async () => {
             try {
                 const userInfo = await getUserInfo(jwt, apiForCurrentUserInfo, userId);
+                handleCurrentTicket();
                 const user = userInfo.user;
                 setUserInfo(user); // Update state with fetched user info
                 setInitialUser(user); // Set initial user info
@@ -241,6 +250,21 @@ export default function RiderDashboard(props) {
                 setStatus(user.status);
                 setSumOfRatings(user.sumOfRatings);
                 setUsername(user.username);
+
+
+                const data = await handleGetActiveTrip();
+            console.log("This is data", data);
+            console.log(data.trip);
+            // Now you can safely access the resolved data properties:
+            setActiveDestination(data.trip.destination);
+            setActiveLocation(data.trip.currentLocation);
+            setActiveMinutesToArrive(data.trip.minutesToDriverArrive);
+            setActiveMinutesToEndTrip(data.trip.minutesToEndTrip);
+            setActivePrice(data.trip.price);
+            setActiveIsAccepted(data.trip.accepted);
+
+
+
             } catch (error) {
                 console.error('Error fetching user info:', error.message);
             }
@@ -249,7 +273,7 @@ export default function RiderDashboard(props) {
         fetchUserInfo();
     }, [jwt, apiForCurrentUserInfo, userId]);
 
-
+    console.log(activeDestination);
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
             <div className="black-headerDashboar flex justify-between items-center p-4">
@@ -523,34 +547,35 @@ export default function RiderDashboard(props) {
                             </div>
                         ) : view == "currentTicket" ? (
                  
-
                             <div className="centered" style={{ width: '100%', height: '10%' }}>
-                                <table className="styled-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Destination</th>
-                                            <th>Current Location</th>
-                                            <th>Price</th>
-                                            <th>Is Ticket Accepted</th>
-                                            <th>Minutes To Driver Arrive</th>
-                                            <th>Minutes To End Trip</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            {/* <td>{destination}</td>
-                                            <td>{currentLocation}</td>
-                                            <td>{price}</td>
-                                            <td>{isTicketAccepted ? 'Yes' : 'No'}</td>
-                                            <td>{minutesToDriverArrive}</td>
-                                            <td>{minutesToEndTrip}</td> */}
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-
-                        ) : null}
+                            <table className="styled-table">
+                                <thead>
+                                    <tr>
+                                        <th>Location</th>
+                                        <th>Destination</th>
+                                        <th>Price</th>
+                                        <th>Driver Arrival</th>
+                                        {activeIsAccepted && <th>Minutes To End Trip</th>}
+                                        <th>Is Ticket Accepted</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{activeLocation}</td>
+                                        <td>{activeDestination}</td>
+                                        <td>{activePrice}{'\u20AC'}</td>
+                                        <td>{activeMinutesToArrive} minutes</td>
+                                        {activeIsAccepted && <td>{activeMinutesToEndTrip}</td>}
+                                        <td>{activeIsAccepted ? "Accepted" : "Not Accepted"}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                           ) : <div className="centered" style={{ width: '100%', height: '10%' }}>
+                          
+                       </div>
+                       
+                        }
                     </div>
                 </div>
             </div>

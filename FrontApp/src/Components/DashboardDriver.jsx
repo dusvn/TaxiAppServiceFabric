@@ -7,20 +7,20 @@ import { FaCar } from 'react-icons/fa';
 import { FaRoad } from 'react-icons/fa';
 import { FaSignOutAlt } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
-import { GetAllDrivers } from '../Services/AdminService.js';
-import DriversView from './DriversView.jsx';
 import '../Style/Profile.css';
 import { makeImage, convertDateTimeToDateOnly, changeUserFields } from '../Services/ProfileService';
 import { getUserInfo } from '../Services/ProfileService';
-import VerifyDrivers from './VerifyDrivers.jsx';
 import { FaSpinner, FaTimes } from 'react-icons/fa';
-
+import { getAllAvailableRides } from '../Services/DriverService.js'
+import { AcceptDrive } from '../Services/DriverService.js';
+import { FinishRide } from '../Services/DriverService.js';
+import RealTimeClock from './RealTimeClock.jsx';
 export default function DashboardDriver(props) {
 
     const user = props.user;
     const apiEndpoint = process.env.REACT_APP_CHANGE_USER_FIELDS;
     const userId = user.id;
-    console.log(userId);
+
     const jwt = localStorage.getItem('token');
     const navigate = useNavigate();
 
@@ -42,7 +42,6 @@ export default function DashboardDriver(props) {
     const [status, setStatus] = useState('');
     const [sumOfRatings, setSumOfRatings] = useState('');
     const [username, setUsername] = useState('');
-
     const [view, setView] = useState('editProfile');
     const [isEditing, setIsEditing] = useState(false);
 
@@ -54,15 +53,20 @@ export default function DashboardDriver(props) {
 
     // Initial user info state
     const [initialUser, setInitialUser] = useState({});
-
-
+    const [tripIsActive, setTripIsActive] = useState(false); // initial false
+    //for rides 
+    const [rides, setRides] = useState([]);
+    const [currentRide, setCurrentRides] = useState();
+    const apiToGetAllRides = process.env.REACT_APP_GET_ALL_RIDES_ENDPOINT;
+    const apiEndpointFinishTrip = process.env.REACT_APP_FINISH_TRIP;
+    const [minutesToDriverArrive, setMinutesToDriverArrive] = useState(null);
+    const [minutesToEndTrip, setMinutesToEndTrip] = useState(null);
 
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
                 const userInfo = await getUserInfo(jwt, apiForCurrentUserInfo, userId);
                 const user = userInfo.user;
-                console.log(user);
                 setUserInfo(user); // Update state with fetched user info
                 setInitialUser(user); // Set initial user info
 
@@ -89,15 +93,9 @@ export default function DashboardDriver(props) {
         fetchUserInfo();
     }, [jwt, apiForCurrentUserInfo, userId]);
 
-    console.log(status);
-
-
-
-
-    console.log("Initial user:", initialUser);
     const handleSaveClick = async () => {
         const ChangedUser = await changeUserFields(apiEndpoint, firstName, lastName, birthday, address, email, password, selectedFile, username, jwt, newPassword, repeatNewPassword, oldPassword, userId);
-        console.log("Changed user:", ChangedUser);
+
 
         setInitialUser(ChangedUser);
         setUserInfo(ChangedUser);
@@ -120,28 +118,10 @@ export default function DashboardDriver(props) {
         setIsEditing(false);
     }
 
-
     const handleSignOut = () => {
         localStorage.removeItem('token');
         navigate('/');
     };
-
-    const handleShowDrivers = async () => {
-        try {
-            setView('drivers');
-        } catch (error) {
-            console.error('Error fetching drivers:', error.message);
-        }
-    };
-
-    const handleShowDriversForVerification = async () => {
-        try {
-            setView('verify');
-        } catch (error) {
-            console.error('Error fetching drivers:', error.message);
-        }
-    };
-
 
     const handleEditProfile = async () => {
         try {
@@ -151,6 +131,53 @@ export default function DashboardDriver(props) {
         }
     };
 
+    const handleViewRides = async () => {
+        try {
+            fetchRides();
+            setView('rides');
+        } catch (error) {
+            console.error("Error when I try to show profile", error);
+        }
+    };
+
+    const fetchRides = async () => {
+        try {
+            const data = await getAllAvailableRides(jwt, apiToGetAllRides);
+            console.log("Rides:", data);
+            setRides(data.rides);
+            console.log("Seted rides", rides);
+        } catch (error) {
+            console.error('Error fetching drivers:', error);
+        }
+    };
+
+    const apiAcceptDrive = process.env.REACT_APP_ACCEPT_RIDE;
+    const handleAcceptNewDrive = async (tripId) => {
+        try {
+            const data = await AcceptDrive(apiAcceptDrive, userId, tripId, jwt); // Drive accepted
+            setCurrentRides(data.ride);
+            setTripIsActive(true);
+            setMinutesToDriverArrive(data.ride.minutesToDriverArrive);
+            setMinutesToEndTrip(data.ride.minutesToEndTrip);
+        } catch (error) {
+            console.error('Error accepting drive:', error.message);
+        }
+    };
+
+    console.log("Current ride",currentRide);
+    const handleTripEnd = async ()  => {
+        // Call your API or perform any action here
+        console.log("Current ride trip id:",currentRide.tripId);
+        console.log("Current ride",currentRide);
+        console.log('Trip ended. Calling API...');
+        console.log(apiEndpointFinishTrip);
+        const response = await FinishRide(apiEndpointFinishTrip,currentRide.tripId,jwt);
+        console.log("Respone:",response);
+        
+        setTripIsActive(false);
+        setCurrentRides(null);
+        setView('editProfile');
+    };
     const handleEditClick = () => {
         setIsEditing(true);
     };
@@ -189,7 +216,7 @@ export default function DashboardDriver(props) {
             reader.readAsDataURL(file);
         }
     };
-    console.log(status);
+    console.log(minutesToEndTrip);
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
             <div className="black-headerDashboar flex justify-between items-center p-4">
@@ -230,140 +257,191 @@ export default function DashboardDriver(props) {
                                     <span>Profile</span>
                                 </div>
                             </button>
-                            <button className="button">
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <FaCheckCircle size={25} style={{ marginRight: '30px' }} />
-                                    <span>Verify drivers</span>
-                                </div>
-                            </button>
-                            <button className="button">
+                            <button className="button" onClick={handleViewRides}>
                                 <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <FaCar size={25} style={{ marginRight: '30px' }} />
-                                    <span>Drivers</span>
+                                    <span>New rides</span>
                                 </div>
                             </button>
                             <button className="button">
                                 <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <FaRoad size={25} style={{ marginRight: '30px' }} />
-                                    <span>Rides</span>
+                                    <span>Rides history</span>
                                 </div>
                             </button>
+                            {tripIsActive ? (
+                                <>
+                                <RealTimeClock
+                                    arrivalMinutes={minutesToDriverArrive}
+                                    tripEndMinutes={minutesToEndTrip}
+                                    onTripEnd={handleTripEnd} 
+                                />
+                            </>
+                            ) : null}
                         </>
                     ) : null}
 
                 </div>
+                {!tripIsActive ? (
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ height: '100%', display: 'flex' }}>
 
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ height: '100%', display: 'flex' }}>
 
+                            {view == "editProfile" ? (
 
-                        {view == "editProfile" ? (
-
-                            <div style={{ width: '100%', backgroundColor: 'white' }}>
-                                <div>
-                                    <div className="custom-style">Edit profile</div>
+                                <div style={{ width: '100%', backgroundColor: 'white' }}>
                                     <div>
-                                        <img src={imageFile} alt="User" style={{ width: '100px', height: '100px', marginLeft: '30px', marginTop: '20px', borderRadius: '50%' }} />
-                                    </div>
-                                    {isEditing ? (
-                                        <div className='customView-div' style={{ marginLeft: '30px', marginTop: '20px' }}>
-                                            <input type='file' onChange={handleImageChange} />
+                                        <div className="custom-style">Edit profile</div>
+                                        <div>
+                                            <img src={imageFile} alt="User" style={{ width: '100px', height: '100px', marginLeft: '30px', marginTop: '20px', borderRadius: '50%' }} />
                                         </div>
-                                    ) : (
-                                        <div className='customView-div'></div>
-                                    )}
-                                    <div style={{ marginLeft: '30px', marginTop: '20px' }}>
-                                        <div className='customProfile-div'>Username</div>
                                         {isEditing ? (
-                                            <input className='customView-div' type='text' value={username} onChange={(e) => setUsername(e.target.value)} />
-                                        ) : (
-                                            <div className='customView-div'>{username}</div>
-                                        )}
-                                        <hr className='customProfile-hr' />
-                                        <div className='customProfile-div'>First name</div>
-                                        {isEditing ? (
-                                            <input className='customView-div' type='text' value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-                                        ) : (
-                                            <div className='customView-div'>{firstName}</div>
-                                        )}
-                                        <hr className='customProfile-hr' />
-                                        <div className='customProfile-div'>Last name</div>
-                                        {isEditing ? (
-                                            <input className='customView-div' type='text' value={lastName} onChange={(e) => setLastName(e.target.value)} />
-                                        ) : (
-                                            <div className='customView-div'>{lastName}</div>
-                                        )}
-                                        <hr className='customProfile-hr' />
-                                        <div className='customProfile-div'>Address</div>
-                                        {isEditing ? (
-                                            <input className='customView-div' type='text' value={address} onChange={(e) => setAddress(e.target.value)} />
-                                        ) : (
-                                            <div className='customView-div'>{address}</div>
-                                        )}
-                                        <hr className='customProfile-hr' />
-                                        <div className='customProfile-div'>Birthday</div>
-                                        {isEditing ? (
-                                            <input className='customView-div' type='text' value={birthday} onChange={(e) => setBirthday(e.target.value)} />
-                                        ) : (
-                                            <div className='customView-div'>{birthday}</div>
-                                        )}
-                                        <hr className='customProfile-hr' />
-                                        <div className='customProfile-div'>Email</div>
-                                        {isEditing ? (
-                                            <input className='customView-div' type='email' value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '250px' }} />
-                                        ) : (
-                                            <div className='customView-div'>{email}</div>
-                                        )}
-                                        <hr className='customProfile-hr' />
-                                        <div className='customProfile-div'>Old password</div>
-                                        {isEditing ? (
-                                            <input className='customView-div' type='password' value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
-                                        ) : (
-                                            <div className='customView-div'>
-                                                <input className='customView-div' type='password' placeholder='********' disabled />
+                                            <div className='customView-div' style={{ marginLeft: '30px', marginTop: '20px' }}>
+                                                <input type='file' onChange={handleImageChange} />
                                             </div>
-                                        )}
-                                        <hr className='customProfile-hr' />
-                                        <div className='customProfile-div'>New password</div>
-                                        {isEditing ? (
-                                            <input className='customView-div' type='password' value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
                                         ) : (
-                                            <div className='customView-div'>
-                                                <input className='customView-div' type='password' placeholder='********' disabled />
-                                            </div>
+                                            <div className='customView-div'></div>
                                         )}
-                                        <hr className='customProfile-hr' />
-                                        <div className='customProfile-div'>Repeat new password</div>
-                                        {isEditing ? (
-                                            <input className='customView-div' type='password' value={repeatNewPassword} onChange={(e) => setRepeatNewPassword(e.target.value)} />
-                                        ) : (
-                                            <div className='customView-div'>
-                                                <input className='customView-div' type='password' placeholder='********' disabled />
-                                            </div>
-                                        )}
-                                        <hr className='customProfile-hr' />
-                                        <br />
-                                        {!isBlocked && isVerified === true ? (
-                                            isEditing ? (
-                                                <div>
-                                                    <button className='edit-button' onClick={handleSaveClick}>Save</button>
-                                                    <button className='edit-button' onClick={handleCancelClick}>Cancel</button>
-                                                </div>
+                                        <div style={{ marginLeft: '30px', marginTop: '20px' }}>
+                                            <div className='customProfile-div'>Username</div>
+                                            {isEditing ? (
+                                                <input className='customView-div' type='text' value={username} onChange={(e) => setUsername(e.target.value)} />
                                             ) : (
-                                                <div>
-                                                    <button className='edit-button' onClick={handleEditClick}>Edit</button>
+                                                <div className='customView-div'>{username}</div>
+                                            )}
+                                            <hr className='customProfile-hr' />
+                                            <div className='customProfile-div'>First name</div>
+                                            {isEditing ? (
+                                                <input className='customView-div' type='text' value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                                            ) : (
+                                                <div className='customView-div'>{firstName}</div>
+                                            )}
+                                            <hr className='customProfile-hr' />
+                                            <div className='customProfile-div'>Last name</div>
+                                            {isEditing ? (
+                                                <input className='customView-div' type='text' value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                                            ) : (
+                                                <div className='customView-div'>{lastName}</div>
+                                            )}
+                                            <hr className='customProfile-hr' />
+                                            <div className='customProfile-div'>Address</div>
+                                            {isEditing ? (
+                                                <input className='customView-div' type='text' value={address} onChange={(e) => setAddress(e.target.value)} />
+                                            ) : (
+                                                <div className='customView-div'>{address}</div>
+                                            )}
+                                            <hr className='customProfile-hr' />
+                                            <div className='customProfile-div'>Birthday</div>
+                                            {isEditing ? (
+                                                <input className='customView-div' type='text' value={birthday} onChange={(e) => setBirthday(e.target.value)} />
+                                            ) : (
+                                                <div className='customView-div'>{birthday}</div>
+                                            )}
+                                            <hr className='customProfile-hr' />
+                                            <div className='customProfile-div'>Email</div>
+                                            {isEditing ? (
+                                                <input className='customView-div' type='email' value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '250px' }} />
+                                            ) : (
+                                                <div className='customView-div'>{email}</div>
+                                            )}
+                                            <hr className='customProfile-hr' />
+                                            <div className='customProfile-div'>Old password</div>
+                                            {isEditing ? (
+                                                <input className='customView-div' type='password' value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
+                                            ) : (
+                                                <div className='customView-div'>
+                                                    <input className='customView-div' type='password' placeholder='********' disabled />
                                                 </div>
-                                            )
-                                        ) : null}
+                                            )}
+                                            <hr className='customProfile-hr' />
+                                            <div className='customProfile-div'>New password</div>
+                                            {isEditing ? (
+                                                <input className='customView-div' type='password' value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                                            ) : (
+                                                <div className='customView-div'>
+                                                    <input className='customView-div' type='password' placeholder='********' disabled />
+                                                </div>
+                                            )}
+                                            <hr className='customProfile-hr' />
+                                            <div className='customProfile-div'>Repeat new password</div>
+                                            {isEditing ? (
+                                                <input className='customView-div' type='password' value={repeatNewPassword} onChange={(e) => setRepeatNewPassword(e.target.value)} />
+                                            ) : (
+                                                <div className='customView-div'>
+                                                    <input className='customView-div' type='password' placeholder='********' disabled />
+                                                </div>
+                                            )}
+                                            <hr className='customProfile-hr' />
+                                            <br />
+                                            {!isBlocked && isVerified === true ? (
+                                                isEditing ? (
+                                                    <div>
+                                                        <button className='edit-button' onClick={handleSaveClick}>Save</button>
+                                                        <button className='edit-button' onClick={handleCancelClick}>Cancel</button>
+                                                    </div>
+                                                ) : (
+                                                    <div>
+                                                        <button className='edit-button' onClick={handleEditClick}>Edit</button>
+                                                    </div>
+                                                )
+                                            ) : null}
 
 
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ) : null}
-                    </div>
+                            ) : view == 'rides' ? (
+                                <div className="centered" style={{ width: '100%', height: '10%' }}>
+                                    <table className="styled-table" style={{ width: '70%' }}>
+                                        <thead>
+                                            <tr>
+                                                <th>Location</th>
+                                                <th>Destination</th>
+                                                <th>Price</th>
+                                                <th>Confirmation</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {rides.map((val, key) => (
+                                                <tr key={val.id}>
+                                                    <td>{val.currentLocation}</td>
+                                                    <td>{val.destination}</td>
+                                                    <td>{val.price}</td>
+                                                    <td>
+                                                        <button
+                                                            style={{
+                                                                borderRadius: '20px',
+                                                                padding: '5px 10px',
+                                                                color: 'white',
+                                                                fontWeight: 'bold',
+                                                                cursor: 'pointer',
+                                                                outline: 'none',
+                                                                background: 'green'
+                                                            }}
+                                                            onClick={() => handleAcceptNewDrive(val.tripId
+                                                            )}
+                                                        >
+                                                            Accept
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
 
-                </div>
+
+
+                            ) : (
+                                <div className="centered" style={{ width: '100%', height: '10%' }}>
+                                    <div>No ticket is active</div>
+                                </div>
+                            )}
+                        </div>
+
+                    </div>
+                ) : null}
+
             </div>
 
         </div>
