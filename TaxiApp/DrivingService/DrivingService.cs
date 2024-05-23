@@ -271,5 +271,39 @@ namespace DrivingService
                 throw;
             }
         }
+
+        public async Task<bool> FinishTrip(Guid tripId)
+        {
+            var roadTrip = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, RoadTrip>>("Trips");
+ 
+            try
+            {
+                using (var tx = StateManager.CreateTransaction())
+                {
+                    ConditionalValue<RoadTrip> result = await roadTrip.TryGetValueAsync(tx, tripId);
+
+                    if (result.HasValue)
+                    {
+                        // azuriranje polja u reliable 
+                        RoadTrip tripForAccept = result.Value;
+                        tripForAccept.IsFinished = true;
+                        await roadTrip.SetAsync(tx, tripForAccept.TripId, tripForAccept);
+                        if (await dataRepo.FinishTrip(tripId))
+                        {
+                            await tx.CommitAsync();
+                            return true;
+                        }
+                        else return false;
+                    }
+                    else return false;
+
+                }
+            }
+
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

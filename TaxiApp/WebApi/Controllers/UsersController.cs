@@ -538,7 +538,48 @@ namespace WebApi.Controllers
             }
         }
 
+        [Authorize(Policy = "Driver")]
+        [HttpPut]
+        public async Task<IActionResult> FinishTrip([FromBody] FinishTripDTO trip)
+        {
+            try
+            {
+                var fabricClient = new FabricClient();
+                bool result = false;
 
+                var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/DrivingService"));
+                foreach (var partition in partitionList)
+                {
+                    var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
+                    var proxy = ServiceProxy.Create<IDrive>(new Uri("fabric:/TaxiApp/DrivingService"), partitionKey);
+                    var partitionResult = await proxy.FinishTrip(trip.TripId);
+                    if (partitionResult != null)
+                    {
+                        result = partitionResult;
+                        break;
+                    }
+                }
+
+                if (result != null)
+                {
+                    var response = new
+                    {
+                        tripEnd = result,
+                        message = "Trip is finished!"
+                    };
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest("This id does not exist");
+                }
+
+            }
+            catch
+            {
+                return BadRequest("Something went wrong!");
+            }
+        }
 
 
         [Authorize(Policy ="Admin")]
