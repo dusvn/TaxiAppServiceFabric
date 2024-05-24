@@ -186,9 +186,9 @@ namespace DrivingService
                     {
                         while (await enumerator.MoveNextAsync(default(CancellationToken)))
                         {
-                            if ((enumerator.Current.Value.RiderId == id && enumerator.Current.Value.IsFinished == false)) 
-                            {                                                                                                   
-                                return new RoadTrip(enumerator.Current.Value.CurrentLocation, enumerator.Current.Value.Destination, enumerator.Current.Value.RiderId, enumerator.Current.Value.DriverId, enumerator.Current.Value.Price, enumerator.Current.Value.Accepted, enumerator.Current.Value.TripId, enumerator.Current.Value.MinutesToDriverArrive, enumerator.Current.Value.MinutesToEndTrip, enumerator.Current.Value.IsFinished);
+                            if ((enumerator.Current.Value.RiderId == id && enumerator.Current.Value.IsFinished == false))
+                            {
+                                return enumerator.Current.Value;
                             }
                         }
                     }
@@ -397,6 +397,35 @@ namespace DrivingService
                 return driverTrips;
             }
 
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<RoadTrip> GetCurrentTrip(Guid id) // ovde se salje userId
+        {
+            var roadTrip = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, RoadTrip>>("Trips");
+            try
+            {
+                using (var tx = StateManager.CreateTransaction())
+                {
+
+                    var enumerable = await roadTrip.CreateEnumerableAsync(tx);
+
+                    using (var enumerator = enumerable.GetAsyncEnumerator())
+                    {
+                        while (await enumerator.MoveNextAsync(default(CancellationToken)))
+                        {
+                            if ((enumerator.Current.Value.RiderId == id && enumerator.Current.Value.IsFinished ==false && enumerator.Current.Value.Accepted))
+                            {
+                                return enumerator.Current.Value;    
+                            }
+                        }
+                    }
+                }
+                return null;
+            }
             catch (Exception)
             {
                 throw;

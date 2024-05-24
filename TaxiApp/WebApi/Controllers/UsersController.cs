@@ -812,5 +812,52 @@ namespace WebApi.Controllers
                 throw;
             }
         }
+
+
+        [Authorize(Policy = "Rider")]
+        [HttpGet]
+        public async Task<IActionResult> GetCurrentTrip(Guid riderId)
+        {
+            try
+            {
+
+                var fabricClient = new FabricClient();
+                RoadTrip result = null;
+
+                var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/DrivingService"));
+                foreach (var partition in partitionList)
+                {
+                    var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
+                    var proxy = ServiceProxy.Create<IDrive>(new Uri("fabric:/TaxiApp/DrivingService"), partitionKey);
+                    var parititonResult = await proxy.GetCurrentTrip(riderId);
+                    if (parititonResult != null)
+                    {
+                        result = parititonResult;
+                        break;
+                    }
+
+                }
+
+                if (result != null)
+                {
+
+                    var response = new
+                    {
+                        trip = result,
+                        message = "Succesfuly get list completed rides"
+                    };
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest("Incorrect email or password");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }

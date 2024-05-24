@@ -10,6 +10,7 @@ import { getUserInfo } from '../Services/ProfileService';
 import '../Style/NewDrive.css';
 import { getEstimation, AcceptDrive, convertTimeStringToMinutes } from '../Services/Estimation.js';
 import {getCurrentRide} from '../Services/RiderService.js';
+import {getCurrentTrip} from '../Services/RiderService.js';
 export default function RiderDashboard(props) {
     const user = props.user;
 
@@ -22,6 +23,7 @@ export default function RiderDashboard(props) {
     const apiEndpointEstimation = process.env.REACT_APP_GET_ESTIMATION_PRICE;
     const apiEndpointAcceptDrive = process.env.REACT_APP_ACCEPT_SUGGESTED_DRIVE;
     const apiEpointGetCurrentDrive= process.env.REACT_APP_GET_ACTIVE_TRIP;
+    const apiEndpointCurrentTrip = process.env.REACT_APP_CURRENT_TRIP;
 
     const [destination, setDestination] = useState(''); // destination 
     const [currentLocation, setCurrentLocation] = useState(''); // current location
@@ -39,7 +41,7 @@ export default function RiderDashboard(props) {
     const [activeIsAccepted,setActiveIsAccepted] = useState(false);
     const [activeMinutesToArrive,setActiveMinutesToArrive] = useState('');
     const [activeMinutesToEndTrip,setActiveMinutesToEndTrip] = useState('');
-
+    const [activeTripId,setActiveTripId] = useState('');
  
 
 
@@ -66,10 +68,16 @@ export default function RiderDashboard(props) {
 
     const handleAcceptDriveSubmit = async () => {
         try {
-            console.log("usao");
-            const data = await AcceptDrive(apiEndpointAcceptDrive, userId, jwt, currentLocation, destination, estimation, isAccepted, driversArivalSeconds);     
+            const data = await AcceptDrive(apiEndpointAcceptDrive, userId, jwt, currentLocation, destination, estimation, isAccepted, driversArivalSeconds);
+
+            setActiveTripId(data.drive.tripId);
+            setActiveDestination(data.drive.destination);
+            setActiveLocation(data.drive.currentLocation);
+            setActiveMinutesToArrive(data.drive.minutesToDriverArrive);
+            setActiveMinutesToEndTrip(data.drive.minutesToEndTrip);
+            setActivePrice(data.drive.price);
+            setActiveIsAccepted(data.drive.accepted);     
             setView('currentTicket');
-            console.log("This is data", data);
             if (data.message && data.message == "Request failed with status code 400") {
                 alert("You have already submited tiket!");
                 setView('currentTicket');
@@ -250,21 +258,6 @@ export default function RiderDashboard(props) {
                 setStatus(user.status);
                 setSumOfRatings(user.sumOfRatings);
                 setUsername(user.username);
-
-
-                const data = await handleGetActiveTrip();
-            console.log("This is data", data);
-            console.log(data.trip);
-            // Now you can safely access the resolved data properties:
-            setActiveDestination(data.trip.destination);
-            setActiveLocation(data.trip.currentLocation);
-            setActiveMinutesToArrive(data.trip.minutesToDriverArrive);
-            setActiveMinutesToEndTrip(data.trip.minutesToEndTrip);
-            setActivePrice(data.trip.price);
-            setActiveIsAccepted(data.trip.accepted);
-
-
-
             } catch (error) {
                 console.error('Error fetching user info:', error.message);
             }
@@ -272,6 +265,25 @@ export default function RiderDashboard(props) {
 
         fetchUserInfo();
     }, [jwt, apiForCurrentUserInfo, userId]);
+
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const data = await getCurrentTrip(jwt,apiEndpointCurrentTrip,userId);
+            console.log("This is data from current accepted trip",data);
+            if(data && data.trip.accepted){
+                console.log("Krece odbrojavanje");
+            }
+
+          } catch (error) {
+            console.error("Error fetching active trip data:", error);
+          }
+        };
+
+        fetchData();
+      }, [view]);
 
     console.log(activeDestination);
     return (

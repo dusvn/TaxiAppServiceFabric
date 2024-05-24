@@ -269,7 +269,7 @@ export default function DashboardDriver(props) {
                                     <span>Rides history</span>
                                 </div>
                             </button>
-                            {tripIsActive ? (
+                            {/* {tripIsActive ? (
                                 <>
                                 <RealTimeClock
                                     arrivalMinutes={minutesToDriverArrive}
@@ -277,7 +277,7 @@ export default function DashboardDriver(props) {
                                     onTripEnd={handleTripEnd} 
                                 />
                             </>
-                            ) : null}
+                            ) : null} */}
                         </>
                     ) : null}
 

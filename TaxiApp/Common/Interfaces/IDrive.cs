@@ -36,5 +36,8 @@ namespace Common.Interfaces
 
         [OperationContract]
         Task<List<RoadTrip>> GetListOfCompletedRidesAdmin();
-    }
+
+        [OperationContract]
+        Task<RoadTrip> GetCurrentTrip(Guid id);
+     }
 }
