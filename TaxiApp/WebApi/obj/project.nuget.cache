@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "c+VoEVfIzXuoZgbAd+Fo0XgoQyIXTCngkuB4FAKgRXijX0RMfAfCyZ8JKcIp0YMUGVdHLgfeizohXvr5BFe+pg==",
+  "dgSpecHash": "S0XxCp9xIaJUwAfjpTj0KlefrFAzJP7TiynbyifeXr471rD6a9Kgob7FpNL/7gYXqz/iYnWsOwQvoqXK9dIYPw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\0010\\Desktop\\projekat\\TaxiApp\\WebApi\\WebApi.csproj",
+  "projectFilePath": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\WebApi\\WebApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\0010\\.nuget\\packages\\azure.core\\1.37.0\\azure.core.1.37.0.nupkg.sha512",
     "C:\\Users\\0010\\.nuget\\packages\\azure.data.tables\\12.8.3\\azure.data.tables.12.8.3.nupkg.sha512",

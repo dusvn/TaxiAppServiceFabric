@@ -14,7 +14,7 @@ namespace Common.Mapper
 
         public static RoadTrip MapRoadTripEntityToRoadTrip(RoadTripEntity roadTrip)
         {
-            return new RoadTrip(roadTrip.CurrentLocation, roadTrip.Destination, roadTrip.RiderId, roadTrip.DriverId, roadTrip.Price, roadTrip.Accepted,roadTrip.TripId,roadTrip.MinutesToDriverArive,roadTrip.MinutesToEndTrip,roadTrip.IsFinished);
+            return new RoadTrip(roadTrip.CurrentLocation, roadTrip.Destination, roadTrip.RiderId, roadTrip.DriverId, roadTrip.Price, roadTrip.Accepted,roadTrip.TripId,roadTrip.SecondsToDriverArive,roadTrip.SecondsToEndTrip,roadTrip.IsFinished);
         }  
     }
 }

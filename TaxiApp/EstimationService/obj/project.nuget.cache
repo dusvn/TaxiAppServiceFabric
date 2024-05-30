@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "sekOswUaL+HF/vGMZ8T4Nl/ep7oTSjl9rB65tah1xMUKBm8FybteVGoIrzLyJi4mEbIa7cCRhchX26cyxkXLjg==",
+  "dgSpecHash": "qjAH0qLGeH5XfAAYH7cVf7KHD3WcBWsWoANKwg6Z2FT+poHjbZWVO24CWLRjt6ZRYWnHkWHr5gGJ6x+96l2wJw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\0010\\Desktop\\projekat\\TaxiApp\\EstimationService\\EstimationService.csproj",
+  "projectFilePath": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\EstimationService\\EstimationService.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\0010\\.nuget\\packages\\azure.core\\1.37.0\\azure.core.1.37.0.nupkg.sha512",
     "C:\\Users\\0010\\.nuget\\packages\\azure.data.tables\\12.8.3\\azure.data.tables.12.8.3.nupkg.sha512",

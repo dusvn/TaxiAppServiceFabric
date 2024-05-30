@@ -329,7 +329,7 @@ namespace UsersService
                     return UserMapper.MapUserToFullUserDto(userFromReliable);
 
                 }
-                else return new FullUserDTO();
+                else return null;
             }
 
         }

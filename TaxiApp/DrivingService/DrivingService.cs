@@ -48,7 +48,7 @@ namespace DrivingService
                             await roadTrips.AddAsync(tx, trip.TripId, trip);
 
 
-                            RoadTripEntity entity = new RoadTripEntity(trip.RiderId, trip.DriverId, trip.CurrentLocation, trip.Destination, trip.Accepted, trip.Price, trip.TripId, trip.MinutesToDriverArrive);
+                            RoadTripEntity entity = new RoadTripEntity(trip.RiderId, trip.DriverId, trip.CurrentLocation, trip.Destination, trip.Accepted, trip.Price, trip.TripId, trip.SecondsToDriverArrive);
                             TableOperation operation = TableOperation.Insert(entity);
                             await dataRepo.Trips.ExecuteAsync(operation);
 
@@ -144,11 +144,8 @@ namespace DrivingService
         /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service replica.</param>
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
-            // TODO: Replace the following sample code with your own logic 
-            //       or remove this RunAsync override if it's not needed in your service.
 
-            var myDictionary = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, long>>("myDictionary");
-            var roadTrip = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, RoadTrip>>("Trips");
+            var roadTrips = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, RoadTrip>>("Trips");
             await LoadRoadTrips();
             while (true)
             {
@@ -156,15 +153,37 @@ namespace DrivingService
 
                 using (var tx = this.StateManager.CreateTransaction())
                 {
-                    var result = await myDictionary.TryGetValueAsync(tx, "Counter");
+                    var enumerable = await roadTrips.CreateEnumerableAsync(tx);
+                    if (await roadTrips.GetCountAsync(tx) > 0)
+                    {
+                        using (var enumerator = enumerable.GetAsyncEnumerator())
+                        {
 
-                    ServiceEventSource.Current.ServiceMessage(this.Context, "Current Counter Value: {0}",
-                        result.HasValue ? result.Value.ToString() : "Value does not exist.");
+                            while (await enumerator.MoveNextAsync(default(CancellationToken)))
+                            {
+                                if (!enumerator.Current.Value.Accepted) 
+                                {
+                                    continue;
+                                }
+                                else if (enumerator.Current.Value.Accepted && enumerator.Current.Value.SecondsToDriverArrive > 0)
+                                {
+                                    enumerator.Current.Value.SecondsToDriverArrive--; //umanjuj za sekundu dolazak driver-a 
+                                }
+                                else if (enumerator.Current.Value.Accepted && enumerator.Current.Value.SecondsToDriverArrive == 0 && enumerator.Current.Value.SecondsToEndTrip > 0)
+                                {
+                                    enumerator.Current.Value.SecondsToEndTrip--;
+                                }
+                                else if (enumerator.Current.Value.IsFinished == false)
+                                {
+                                    enumerator.Current.Value.IsFinished = true;
+                                    // ovde bi trebalo update baze da se izvrsi 
+                                    await dataRepo.FinishTrip(enumerator.Current.Value.TripId);
 
-                    await myDictionary.AddOrUpdateAsync(tx, "Counter", 0, (key, value) => ++value);
-
-                    // If an exception is thrown before calling CommitAsync, the transaction aborts, all changes are 
-                    // discarded, and nothing is saved to the secondary replicas.
+                                }
+                                await roadTrips.SetAsync(tx, enumerator.Current.Key, enumerator.Current.Value);
+                            }
+                        }
+                    }
                     await tx.CommitAsync();
                 }
 
@@ -250,7 +269,7 @@ namespace DrivingService
                     {
                         // azuriranje polja u reliable 
                         RoadTrip tripForAccept = result.Value;
-                        tripForAccept.MinutesToEndTrip = 1;
+                        tripForAccept.SecondsToEndTrip = 60;
                         tripForAccept.DriverId = driverId;
                         tripForAccept.Accepted = true;
                         await roadTrip.SetAsync(tx, tripForAccept.TripId, tripForAccept);

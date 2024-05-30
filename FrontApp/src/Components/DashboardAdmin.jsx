@@ -111,7 +111,9 @@ export default function DashboardAdmin(props) {
         setStatus(ChangedUser.status);
         setSumOfRatings(ChangedUser.sumOfRatings);
         setUsername(ChangedUser.username);
-
+        setOldPassword('');
+        setNewPassword('');
+        setRepeatNewPassword('');
         setIsEditing(false);
     }
 

@@ -63,7 +63,7 @@ namespace DrivingService
             {
                 RoadTripEntity trip = queryResult.Results[0];
                 trip.Accepted = true;
-                trip.MinutesToEndTrip = 1;
+                trip.SecondsToEndTrip= 60;
                 trip.DriverId = driverId;
                 var operation = TableOperation.Replace(trip);
                 await Trips.ExecuteAsync(operation);

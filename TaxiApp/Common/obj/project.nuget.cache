@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "lBl9IIo5txGSgKOHOdzVAhDoD0JNhHzUkPqKFvv3AmrpT4GES5qWb6cnc+PNitbUy6U6uhnW1+JRxyNyX/+0pQ==",
+  "dgSpecHash": "hnWSS7sR3lECTj3PI1w3LObGBwGyxw7Ss0q+g6dow8VA9P9toDZ4Xe4Nm7x6lMMiVXnm6zUUOEzbY1EVJZQ2Cw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\0010\\Desktop\\projekat\\TaxiApp\\Common\\Common.csproj",
+  "projectFilePath": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\Common\\Common.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\0010\\.nuget\\packages\\azure.core\\1.37.0\\azure.core.1.37.0.nupkg.sha512",
     "C:\\Users\\0010\\.nuget\\packages\\azure.data.tables\\12.8.3\\azure.data.tables.12.8.3.nupkg.sha512",

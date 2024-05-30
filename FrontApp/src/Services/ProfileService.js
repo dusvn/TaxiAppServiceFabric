@@ -48,15 +48,13 @@ export async function changeUserFields(apiEndpoint, firstName, lastName, birthda
     formData.append('ImageUrl', imageUrl);
     formData.append('Username', username);
 
-    if(oldPasswordRepeat!='' || newPasswordRepeat!='' || newPassword!=''){
-        if (checkNewPassword(password,oldPasswordRepeat,newPassword,newPasswordRepeat)) {
+    if(oldPasswordRepeat!='' || newPasswordRepeat!='' || newPassword!='' && checkNewPassword(password,oldPasswordRepeat,newPassword,newPasswordRepeat)){
             console.log("Succesfully entered new passwords");
             const dataOtherCall = await changeUserFieldsApiCall(apiEndpoint,formData,jwt);
-            return dataOtherCall;
-        }
-    }else{
+            console.log("data other call",dataOtherCall);
+            return dataOtherCall.changedUser;
+    }else if(oldPasswordRepeat=='' && newPasswordRepeat=='' && newPassword==''){
         const data = await changeUserFieldsApiCall(apiEndpoint,formData,jwt);
-        console.log("Response data:",data.changedUser);
         return data.changedUser;
     }
 

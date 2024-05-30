@@ -112,6 +112,7 @@ namespace WebApi
                         app.UseStaticFiles();
                         app.UseFileServer();
                         app.UseDefaultFiles();
+                        app.UseWebSockets();
 
                         return app;
 

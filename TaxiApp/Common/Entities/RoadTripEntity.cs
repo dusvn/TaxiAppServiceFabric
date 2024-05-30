@@ -29,9 +29,9 @@ namespace Common.Entities
         
         public Guid TripId { get; set; } 
 
-        public int MinutesToDriverArive { get;set;}
+        public int SecondsToDriverArive { get;set;}
 
-        public int MinutesToEndTrip { get;set;}
+        public int SecondsToEndTrip { get;set;}
 
         public bool IsFinished { get; set; }
         public RoadTripEntity()
@@ -49,8 +49,8 @@ namespace Common.Entities
             TripId = triId;
             RowKey = triId.ToString();
             PartitionKey = triId.ToString();
-            MinutesToDriverArive = minutes;
-            MinutesToEndTrip = 0;
+            SecondsToDriverArive = minutes;
+            SecondsToEndTrip = 0;
             IsFinished = false;
         }
     }

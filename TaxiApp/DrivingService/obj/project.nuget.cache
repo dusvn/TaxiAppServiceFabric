@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "brdmNCozm86QX51xzBzp5F3Mxwvf1vXaY1YjMLswe71R1KydwcSK598QVKoRThX5etwQITKzy6UecY6HjoDvHA==",
+  "dgSpecHash": "Pz7e5J+CfoHBPhH3grX+n+bZ9QGzIda+NbGzxEg6sQ3unxIF/s6jq2r3OEvSwpLneRsa0w0pjY/xhVC2avh1AA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\0010\\Desktop\\projekat\\TaxiApp\\DrivingService\\DrivingService.csproj",
+  "projectFilePath": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\DrivingService\\DrivingService.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\0010\\.nuget\\packages\\azure.core\\1.37.0\\azure.core.1.37.0.nupkg.sha512",
     "C:\\Users\\0010\\.nuget\\packages\\azure.data.tables\\12.8.3\\azure.data.tables.12.8.3.nupkg.sha512",

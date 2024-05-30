@@ -1,18 +1,18 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\0010\\Desktop\\projekat\\TaxiApp\\",
+  "WorkspaceRootPath": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{319B9AC7-7C84-48FA-AD35-441D11DC9426}|DrivingService\\DrivingService.csproj|c:\\users\\0010\\desktop\\projekat\\taxiapp\\drivingservice\\drivingdatarepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{319B9AC7-7C84-48FA-AD35-441D11DC9426}|DrivingService\\DrivingService.csproj|solutionrelative:drivingservice\\drivingdatarepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{14757C4F-4E0C-4456-B282-FC5AACD0019C}|WebApi\\WebApi.csproj|c:\\users\\0010\\desktop\\projekat\\servicefabric\\taxiapp\\webapi\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{14757C4F-4E0C-4456-B282-FC5AACD0019C}|WebApi\\WebApi.csproj|solutionrelative:webapi\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{319B9AC7-7C84-48FA-AD35-441D11DC9426}|DrivingService\\DrivingService.csproj|c:\\users\\0010\\desktop\\projekat\\taxiapp\\drivingservice\\drivingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{14757C4F-4E0C-4456-B282-FC5AACD0019C}|WebApi\\WebApi.csproj|c:\\users\\0010\\desktop\\projekat\\servicefabric\\taxiapp\\webapi\\webapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{14757C4F-4E0C-4456-B282-FC5AACD0019C}|WebApi\\WebApi.csproj|solutionrelative:webapi\\webapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{319B9AC7-7C84-48FA-AD35-441D11DC9426}|DrivingService\\DrivingService.csproj|c:\\users\\0010\\desktop\\projekat\\servicefabric\\taxiapp\\drivingservice\\drivingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{319B9AC7-7C84-48FA-AD35-441D11DC9426}|DrivingService\\DrivingService.csproj|solutionrelative:drivingservice\\drivingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{3F8040ED-E7B3-405A-82C7-7D2D868C49C6}|UsersService\\UsersService.csproj|c:\\users\\0010\\desktop\\projekat\\taxiapp\\usersservice\\usersservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3F8040ED-E7B3-405A-82C7-7D2D868C49C6}|UsersService\\UsersService.csproj|solutionrelative:usersservice\\usersservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -31,39 +31,41 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "DrivingDataRepo.cs",
-              "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\TaxiApp\\DrivingService\\DrivingDataRepo.cs",
-              "RelativeDocumentMoniker": "DrivingService\\DrivingDataRepo.cs",
-              "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\TaxiApp\\DrivingService\\DrivingDataRepo.cs",
-              "RelativeToolTip": "DrivingService\\DrivingDataRepo.cs",
-              "ViewState": "AQIAADwAAAAAAAAAAAAmwEUAAAAcAAAA",
+              "Title": "UsersController.cs",
+              "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\WebApi\\Controllers\\UsersController.cs",
+              "RelativeDocumentMoniker": "WebApi\\Controllers\\UsersController.cs",
+              "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\WebApi\\Controllers\\UsersController.cs",
+              "RelativeToolTip": "WebApi\\Controllers\\UsersController.cs",
+              "ViewState": "AQIAABMDAAAAAAAAAAAAAF4DAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-05-29T15:08:53.158Z",
+              "WhenOpened": "2024-05-30T21:51:39.934Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "DrivingService.cs",
-              "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\TaxiApp\\DrivingService\\DrivingService.cs",
-              "RelativeDocumentMoniker": "DrivingService\\DrivingService.cs",
-              "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\TaxiApp\\DrivingService\\DrivingService.cs",
-              "RelativeToolTip": "DrivingService\\DrivingService.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Title": "WebApi.cs",
+              "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\WebApi\\WebApi.cs",
+              "RelativeDocumentMoniker": "WebApi\\WebApi.cs",
+              "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\WebApi\\WebApi.cs",
+              "RelativeToolTip": "WebApi\\WebApi.cs",
+              "ViewState": "AQIAAE4AAAAAAAAAAAAowHIAAAAsAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-05-29T15:08:51.325Z"
+              "WhenOpened": "2024-05-30T21:51:23.532Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "UsersService.cs",
-              "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\TaxiApp\\UsersService\\UsersService.cs",
-              "RelativeDocumentMoniker": "UsersService\\UsersService.cs",
-              "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\TaxiApp\\UsersService\\UsersService.cs",
-              "RelativeToolTip": "UsersService\\UsersService.cs",
-              "ViewState": "AQIAABgAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Title": "DrivingService.cs",
+              "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\DrivingService\\DrivingService.cs",
+              "RelativeDocumentMoniker": "DrivingService\\DrivingService.cs",
+              "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\DrivingService\\DrivingService.cs",
+              "RelativeToolTip": "DrivingService\\DrivingService.cs",
+              "ViewState": "AQIAAJEAAAAAAAAAAAAcwL4AAAAMAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-05-29T15:08:05.966Z"
+              "WhenOpened": "2024-05-30T21:12:02.208Z",
+              "EditorCaption": ""
             }
           ]
         }

@@ -67,6 +67,7 @@ export default function DashboardDriver(props) {
             try {
                 const userInfo = await getUserInfo(jwt, apiForCurrentUserInfo, userId);
                 const user = userInfo.user;
+                console.log(user);
                 setUserInfo(user); // Update state with fetched user info
                 setInitialUser(user); // Set initial user info
 
@@ -94,8 +95,10 @@ export default function DashboardDriver(props) {
     }, [jwt, apiForCurrentUserInfo, userId]);
 
     const handleSaveClick = async () => {
+        console.log("Address",address);
         const ChangedUser = await changeUserFields(apiEndpoint, firstName, lastName, birthday, address, email, password, selectedFile, username, jwt, newPassword, repeatNewPassword, oldPassword, userId);
 
+        console.log("Changed user:",ChangedUser);
 
         setInitialUser(ChangedUser);
         setUserInfo(ChangedUser);
@@ -114,7 +117,9 @@ export default function DashboardDriver(props) {
         setStatus(ChangedUser.status);
         setSumOfRatings(ChangedUser.sumOfRatings);
         setUsername(ChangedUser.username);
-
+        setOldPassword('');
+        setNewPassword('');
+        setRepeatNewPassword('');
         setIsEditing(false);
     }
 
@@ -164,20 +169,8 @@ export default function DashboardDriver(props) {
         }
     };
 
-    console.log("Current ride",currentRide);
-    const handleTripEnd = async ()  => {
-        // Call your API or perform any action here
-        console.log("Current ride trip id:",currentRide.tripId);
-        console.log("Current ride",currentRide);
-        console.log('Trip ended. Calling API...');
-        console.log(apiEndpointFinishTrip);
-        const response = await FinishRide(apiEndpointFinishTrip,currentRide.tripId,jwt);
-        console.log("Respone:",response);
-        
-        setTripIsActive(false);
-        setCurrentRides(null);
-        setView('editProfile');
-    };
+
+
     const handleEditClick = () => {
         setIsEditing(true);
     };
@@ -249,37 +242,31 @@ export default function DashboardDriver(props) {
                     <div>
                         <hr style={{ width: '330px' }}></hr>
                     </div>
-                    {!isBlocked && isVerified === true ? (
-                        <>
-                            <button className="button" onClick={handleEditProfile}>
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <MdPerson size={25} style={{ marginRight: '30px' }} />
-                                    <span>Profile</span>
-                                </div>
-                            </button>
-                            <button className="button" onClick={handleViewRides}>
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <FaCar size={25} style={{ marginRight: '30px' }} />
-                                    <span>New rides</span>
-                                </div>
-                            </button>
-                            <button className="button">
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <FaRoad size={25} style={{ marginRight: '30px' }} />
-                                    <span>Rides history</span>
-                                </div>
-                            </button>
-                            {/* {tripIsActive ? (
-                                <>
-                                <RealTimeClock
-                                    arrivalMinutes={minutesToDriverArrive}
-                                    tripEndMinutes={minutesToEndTrip}
-                                    onTripEnd={handleTripEnd} 
-                                />
+                    <>
+                        <button className="button" onClick={handleEditProfile}>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <MdPerson size={25} style={{ marginRight: '30px' }} />
+                                <span>Profile</span>
+                            </div>
+                        </button>
+                        {!isBlocked && isVerified === true ? (
+                            <>
+                                <button className="button" onClick={handleViewRides}>
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <FaCar size={25} style={{ marginRight: '30px' }} />
+                                        <span>New rides</span>
+                                    </div>
+                                </button>
+                                <button className="button">
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <FaRoad size={25} style={{ marginRight: '30px' }} />
+                                        <span>Rides history</span>
+                                    </div>
+                                </button>
                             </>
-                            ) : null} */}
-                        </>
-                    ) : null}
+                        ) : null}
+                    </>
+
 
                 </div>
                 {!tripIsActive ? (

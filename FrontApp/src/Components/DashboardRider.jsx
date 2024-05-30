@@ -42,10 +42,6 @@ export default function RiderDashboard(props) {
     const [activeMinutesToArrive,setActiveMinutesToArrive] = useState('');
     const [activeMinutesToEndTrip,setActiveMinutesToEndTrip] = useState('');
     const [activeTripId,setActiveTripId] = useState('');
- 
-
-
-
 
     const handleEstimationSubmit = async () => {
         try {
@@ -77,7 +73,6 @@ export default function RiderDashboard(props) {
             setActiveMinutesToEndTrip(data.drive.minutesToEndTrip);
             setActivePrice(data.drive.price);
             setActiveIsAccepted(data.drive.accepted);     
-            setView('currentTicket');
             if (data.message && data.message == "Request failed with status code 400") {
                 alert("You have already submited tiket!");
                 setView('currentTicket');
@@ -157,13 +152,12 @@ export default function RiderDashboard(props) {
         setStatus(ChangedUser.status);
         setSumOfRatings(ChangedUser.sumOfRatings);
         setUsername(ChangedUser.username);
+        setOldPassword('');
+        setNewPassword('');
+        setRepeatNewPassword('');
 
         setIsEditing(false);
     }
-
-
-
-
     const handleEditClick = () => {
         setIsEditing(true);
     };
@@ -177,25 +171,7 @@ export default function RiderDashboard(props) {
         setView('editProfile');
     }
 
-    const handleGetActiveTrip = async () => {
-        try {
 
-                const data = await getCurrentRide(jwt,apiEpointGetCurrentDrive,userId); 
-                return data;
-        } catch (error) {
-            console.error("Error when I try to show profile", error);
-        }
-    };
-    const handleCurrentTicket = async () => {
-        try {
-            setView('currentTicket');
-            
-        } catch (error) {
-            console.error('Error fetching trip data:', error);
-            // Handle the error (e.g., show an error message to the user)
-        }
-    };
-    
     //trip koji treba da se usefetchuje 
 
 
@@ -238,7 +214,6 @@ export default function RiderDashboard(props) {
         const fetchUserInfo = async () => {
             try {
                 const userInfo = await getUserInfo(jwt, apiForCurrentUserInfo, userId);
-                handleCurrentTicket();
                 const user = userInfo.user;
                 setUserInfo(user); // Update state with fetched user info
                 setInitialUser(user); // Set initial user info
@@ -268,22 +243,22 @@ export default function RiderDashboard(props) {
 
 
 
-    useEffect(() => {
-        const fetchData = async () => {
-          try {
-            const data = await getCurrentTrip(jwt,apiEndpointCurrentTrip,userId);
-            console.log("This is data from current accepted trip",data);
-            if(data && data.trip.accepted){
-                console.log("Krece odbrojavanje");
-            }
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //       try {
+    //         const data = await getCurrentTrip(jwt,apiEndpointCurrentTrip,userId);
+    //         console.log("This is data from current accepted trip",data);
+    //         if(data && data.trip.accepted){
+    //             console.log("Krece odbrojavanje");
+    //         }
 
-          } catch (error) {
-            console.error("Error fetching active trip data:", error);
-          }
-        };
+    //       } catch (error) {
+    //         console.error("Error fetching active trip data:", error);
+    //       }
+    //     };
 
-        fetchData();
-      }, [view]);
+    //     fetchData();
+    //   }, [view]);
 
     console.log(activeDestination);
     return (
@@ -320,12 +295,6 @@ export default function RiderDashboard(props) {
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <FaRoad size={25} style={{ marginRight: '30px' }} />
                             <span>Driving history</span>
-                        </div>
-                    </button>
-                    <button className="button" onClick={handleCurrentTicket}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <MdConfirmationNumber size={25} style={{ marginRight: '30px' }} />
-                            <span>Current ticket</span>
                         </div>
                     </button>
                 </div>
@@ -557,33 +526,7 @@ export default function RiderDashboard(props) {
 
                                 </div>
                             </div>
-                        ) : view == "currentTicket" ? (
-                 
-                            <div className="centered" style={{ width: '100%', height: '10%' }}>
-                            <table className="styled-table">
-                                <thead>
-                                    <tr>
-                                        <th>Location</th>
-                                        <th>Destination</th>
-                                        <th>Price</th>
-                                        <th>Driver Arrival</th>
-                                        {activeIsAccepted && <th>Minutes To End Trip</th>}
-                                        <th>Is Ticket Accepted</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>{activeLocation}</td>
-                                        <td>{activeDestination}</td>
-                                        <td>{activePrice}{'\u20AC'}</td>
-                                        <td>{activeMinutesToArrive} minutes</td>
-                                        {activeIsAccepted && <td>{activeMinutesToEndTrip}</td>}
-                                        <td>{activeIsAccepted ? "Accepted" : "Not Accepted"}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                           ) : <div className="centered" style={{ width: '100%', height: '10%' }}>
+                        ) :  <div className="centered" style={{ width: '100%', height: '10%' }}>
                           
                        </div>
                        

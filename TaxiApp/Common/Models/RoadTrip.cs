@@ -32,10 +32,10 @@ namespace Common.Models
         public Guid TripId { get;set; }
 
         [DataMember]
-        public int MinutesToDriverArrive { get; set; }
+        public int SecondsToDriverArrive { get; set; }
 
         [DataMember]
-        public int MinutesToEndTrip { get; set; }
+        public int SecondsToEndTrip { get; set; }
 
         [DataMember]
         public bool IsFinished { get; set;}
@@ -63,15 +63,15 @@ namespace Common.Models
             Accepted = accepted; // by default is false 
             TripId = Guid.NewGuid();
             DriverId = new Guid("00000000-0000-0000-0000-000000000000"); // that say this trip dont have driver
-            MinutesToDriverArrive = minutes;
+            SecondsToDriverArrive = minutes*60;
             IsFinished = false;
         }
 
         public RoadTrip(string currentLocation, string destination, Guid riderId, Guid driverId, double price, bool accepted, Guid tripId,int minutesToDriverArrive,int minutesToEnd,bool isFinished) : this(currentLocation, destination, riderId, driverId, price, accepted)
         {
             TripId = tripId;
-            MinutesToDriverArrive = minutesToDriverArrive;
-            MinutesToEndTrip = minutesToEnd;
+            SecondsToDriverArrive = minutesToDriverArrive;
+            SecondsToEndTrip = minutesToEnd;
             IsFinished = isFinished;
         }
     }
