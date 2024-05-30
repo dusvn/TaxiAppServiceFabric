@@ -1,0 +1,73 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\0010\\Desktop\\projekat\\TaxiApp\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{319B9AC7-7C84-48FA-AD35-441D11DC9426}|DrivingService\\DrivingService.csproj|c:\\users\\0010\\desktop\\projekat\\taxiapp\\drivingservice\\drivingdatarepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{319B9AC7-7C84-48FA-AD35-441D11DC9426}|DrivingService\\DrivingService.csproj|solutionrelative:drivingservice\\drivingdatarepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{319B9AC7-7C84-48FA-AD35-441D11DC9426}|DrivingService\\DrivingService.csproj|c:\\users\\0010\\desktop\\projekat\\taxiapp\\drivingservice\\drivingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{319B9AC7-7C84-48FA-AD35-441D11DC9426}|DrivingService\\DrivingService.csproj|solutionrelative:drivingservice\\drivingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3F8040ED-E7B3-405A-82C7-7D2D868C49C6}|UsersService\\UsersService.csproj|c:\\users\\0010\\desktop\\projekat\\taxiapp\\usersservice\\usersservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3F8040ED-E7B3-405A-82C7-7D2D868C49C6}|UsersService\\UsersService.csproj|solutionrelative:usersservice\\usersservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{0849e941-4665-42e5-8dd0-e4c8da15dbd0}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "DrivingDataRepo.cs",
+              "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\TaxiApp\\DrivingService\\DrivingDataRepo.cs",
+              "RelativeDocumentMoniker": "DrivingService\\DrivingDataRepo.cs",
+              "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\TaxiApp\\DrivingService\\DrivingDataRepo.cs",
+              "RelativeToolTip": "DrivingService\\DrivingDataRepo.cs",
+              "ViewState": "AQIAADwAAAAAAAAAAAAmwEUAAAAcAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-29T15:08:53.158Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "DrivingService.cs",
+              "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\TaxiApp\\DrivingService\\DrivingService.cs",
+              "RelativeDocumentMoniker": "DrivingService\\DrivingService.cs",
+              "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\TaxiApp\\DrivingService\\DrivingService.cs",
+              "RelativeToolTip": "DrivingService\\DrivingService.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-29T15:08:51.325Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "UsersService.cs",
+              "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\TaxiApp\\UsersService\\UsersService.cs",
+              "RelativeDocumentMoniker": "UsersService\\UsersService.cs",
+              "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\TaxiApp\\UsersService\\UsersService.cs",
+              "RelativeToolTip": "UsersService\\UsersService.cs",
+              "ViewState": "AQIAABgAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-05-29T15:08:05.966Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,4 @@
-﻿using Microsoft.Azure;
-using Microsoft.WindowsAzure.Storage.Table;
+﻿using Microsoft.WindowsAzure.Storage.Table;
 using Microsoft.WindowsAzure.Storage;
 using System;
 using System.Collections.Generic;
@@ -11,6 +10,8 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using Common.Entities;
 using static System.Net.Mime.MediaTypeNames;
 using Common.Models;
+using System.Collections;
+using Common.Interfaces;
 
 
 namespace UsersService
@@ -62,12 +63,76 @@ namespace UsersService
             var qRes = Users.ExecuteQuerySegmentedAsync(q, null).GetAwaiter().GetResult();
             return qRes.Results;
         }
+        public async Task<bool> UpdateEntity(Guid id, bool status)
+        {
+            TableQuery<UserEntity> driverQuery = new TableQuery<UserEntity>()
+        .Where(TableQuery.GenerateFilterConditionForGuid("Id", QueryComparisons.Equal,id));
+            TableQuerySegment<UserEntity> queryResult = await Users.ExecuteQuerySegmentedAsync(driverQuery, null);
+
+            if (queryResult.Results.Count > 0)
+            {
+                UserEntity user = queryResult.Results[0]; 
+                user.IsBlocked = status;
+                var operation = TableOperation.Replace(user);
+                await Users.ExecuteAsync(operation);
+
+                return true; 
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task UpdateDriverStatus(Guid id, string status)
+        {
+            TableQuery<UserEntity> usersQuery = new TableQuery<UserEntity>()
+       .Where(TableQuery.GenerateFilterConditionForGuid("Id", QueryComparisons.Equal, id));
+            TableQuerySegment<UserEntity> queryResult = await Users.ExecuteQuerySegmentedAsync(usersQuery, null);
+
+
+            if (queryResult.Results.Count > 0)
+            {
+                UserEntity userFromTable = queryResult.Results[0];
+                userFromTable.Status = status;
+                if (status == "Prihvacen") userFromTable.IsVerified = true;
+                else userFromTable.IsVerified = false;
+                var operation = TableOperation.Replace(userFromTable);
+                await Users.ExecuteAsync(operation);
+     
+            }
+          
+        }
+
+        public async Task UpdateUser(UserForUpdateOverNetwork userOverNetwork,User u)
+        {
+
+            TableQuery<UserEntity> usersQuery = new TableQuery<UserEntity>()
+       .Where(TableQuery.GenerateFilterConditionForGuid("Id", QueryComparisons.Equal, userOverNetwork.Id));
+
+            TableQuerySegment<UserEntity> queryResult = await Users.ExecuteQuerySegmentedAsync(usersQuery, null);
+
+            if (queryResult.Results.Count > 0)
+            {
+                UserEntity userFromTable = queryResult.Results[0];
+                userFromTable.Email = u.Email;
+                userFromTable.FirstName = u.FirstName;
+                userFromTable.LastName = u.LastName;
+                userFromTable.Address = u.Address;
+                userFromTable.Birthday = u.Birthday;
+                userFromTable.Username = u.Username;
+                userFromTable.Username = u.Username;
+                userFromTable.ImageUrl = u.ImageUrl;
+                var operation = TableOperation.Replace(userFromTable);
+                await Users.ExecuteAsync(operation);
+            }
+        }
 
 
         public async Task<byte[]> DownloadImage(UsersDataRepository dataRepo,UserEntity user,string nameOfContainer)
         {
 
-            CloudBlockBlob blob = await dataRepo.GetBlockBlobReference(nameOfContainer, $"image_{user.Username}");
+            CloudBlockBlob blob = await dataRepo.GetBlockBlobReference(nameOfContainer, $"image_{user.Id}");
     
 
             await blob.FetchAttributesAsync();

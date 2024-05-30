@@ -21,11 +21,11 @@ using Microsoft.WindowsAzure.Storage.Table;
 using System.Collections.Concurrent;
 using Common;
 using Common.Entities;
-using Azure.Storage.Blobs.Specialized;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Azure.Data.Tables;
 using Common.Mapper;
 using Microsoft.ServiceFabric.Data;
+using static Common.Enums.VerificationStatus;
 
 namespace UsersService
 {
@@ -40,38 +40,44 @@ namespace UsersService
             : base(context)
         {
 
-            dataRepo = new UsersDataRepository("UsersTaxiApp");
+            dataRepo = new UsersDataRepository("UsersTaxiAppDusan");
         }
 
 
 
         public async Task<bool> addNewUser(User user)
         {
-            var userDictionary = await StateManager.GetOrAddAsync<IReliableDictionary<string, User>>("UserEntities");
+            var userDictionary = await StateManager.GetOrAddAsync<IReliableDictionary<Guid, User>>("UserEntities");
 
             try
             {
                 using (var transaction = StateManager.CreateTransaction())
                 {
+                    if (!await CheckIfUserAlreadyExists(user))
+                    {
 
-                   
+                        await userDictionary.AddAsync(transaction, user.Id, user); // dodaj ga prvo u reliable 
 
-                    //insert image of user in blob
-                    CloudBlockBlob blob = await dataRepo.GetBlockBlobReference("users", $"image_{user.Username}");
-                    blob.Properties.ContentType = user.ImageFile.ContentType;
-                    await blob.UploadFromByteArrayAsync(user.ImageFile.FileContent, 0, user.ImageFile.FileContent.Length);
-                    string imageUrl = blob.Uri.AbsoluteUri; 
+                        //insert image of user in blob
+                        CloudBlockBlob blob = await dataRepo.GetBlockBlobReference("users", $"image_{user.Id}");
+                        blob.Properties.ContentType = user.ImageFile.ContentType;
+                        await blob.UploadFromByteArrayAsync(user.ImageFile.FileContent, 0, user.ImageFile.FileContent.Length);
+                        string imageUrl = blob.Uri.AbsoluteUri;
 
-                    //insert user in database
-                    UserEntity newUser = new UserEntity(user, imageUrl);
-                    TableOperation operation = TableOperation.Insert(newUser);
-                    await dataRepo.Users.ExecuteAsync(operation);
+                        //insert user in database
+                        UserEntity newUser = new UserEntity(user, imageUrl);
+                        TableOperation operation = TableOperation.Insert(newUser);
+                        await dataRepo.Users.ExecuteAsync(operation);
 
-                    await userDictionary.AddAsync(transaction, user.Username,user);
-                    await transaction.CommitAsync();
 
+
+
+                        await transaction.CommitAsync();
+                        return true;
+                    }
+                    return false;
                 }
-                return true;
+
             }
             catch (Exception ex)
             {
@@ -79,11 +85,39 @@ namespace UsersService
             }
         }
 
-        
+        private async Task<bool> CheckIfUserAlreadyExists(User user)
+        {
+            var users = await StateManager.GetOrAddAsync<IReliableDictionary<Guid, User>>("UserEntities");
+            try
+            {
+                using (var tx = StateManager.CreateTransaction())
+                {
+                    var enumerable = await users.CreateEnumerableAsync(tx);
+
+                    using (var enumerator = enumerable.GetAsyncEnumerator())
+                    {
+                        while (await enumerator.MoveNextAsync(default(CancellationToken)))
+                        {
+                            if (enumerator.Current.Value.Email == user.Email || enumerator.Current.Value.Id == user.Id || enumerator.Current.Value.Username == user.Username)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
 
         private async Task LoadUsers()
         {
-            var userDictionary = await StateManager.GetOrAddAsync<IReliableDictionary<string, User>>("UserEntities");
+            var userDictionary = await StateManager.GetOrAddAsync<IReliableDictionary<Guid, User>>("UserEntities");
             try
             {
                 using (var transaction = StateManager.CreateTransaction())
@@ -95,8 +129,8 @@ namespace UsersService
                         foreach (var user in users)
                         {
                             byte[] image = await dataRepo.DownloadImage(dataRepo, user, "users");
-                            await userDictionary.AddAsync(transaction, user.Email, UserMapper.MapUserEntityToUser(user,image)); 
-                        } 
+                            await userDictionary.AddAsync(transaction, user.Id, UserMapper.MapUserEntityToUser(user, image));
+                        }
                     }
 
                     await transaction.CommitAsync();
@@ -110,58 +144,6 @@ namespace UsersService
             }
         }
 
-
-
-
-
-
-
-
-        //public async Task Migrate()
-        //{
-
-
-        //    var userDictionary = await StateManager.GetOrAddAsync<IReliableDictionary<string, User>>("Users");
-
-        //    using (var transaction = StateManager.CreateTransaction())
-        //    {
-        //        var enumerableNew = await userDictionary.CreateEnumerableAsync(transaction); // ovaj iz state managera
-        //        var enumerator = enumerableNew.GetAsyncEnumerator();
-
-        //        if (await userDictionary.GetCountAsync(transaction) < 1) // ako nema entiteta 
-        //        {
-        //            Dictionary<string, User> users = await DataFromDatabase();
-
-        //            if (users.Count() > 0) // ako postoji nesto upisano 
-        //            {
-        //                foreach (var user in users)
-        //                {
-        //                    await userDictionary.AddAsync(transaction, user.Key, user.Value); // dodaje u taj dic i state-a 
-        //                }
-
-        //                await transaction.CommitAsync();
-        //                return;
-        //            }
-        //        }
-
-        //        while (await enumerator.MoveNextAsync(CancellationToken.None))
-        //        {
-        //            var current = enumerator.Current;
-
-        //            try
-        //            {
-        //                await WriteUser(current.Value);
-
-        //            }
-        //            catch (Exception)
-        //            {
-        //                throw;
-        //            }
-        //        }
-        //    }
-
-        //    Thread.Sleep(3000);
-        //}
 
         /// <summary>
         /// Optional override to create listeners (e.g., HTTP, Service Remoting, WCF, etc.) for this service replica to handle client or user requests.
@@ -184,7 +166,7 @@ namespace UsersService
             //       or remove this RunAsync override if it's not needed in your service.
 
             var myDictionary = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, long>>("myDictionary");
-            var users = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, User>>("UserEntities");
+            var users = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, User>>("UserEntities");
             // ovde ce biti load users 
             await LoadUsers();
             while (true)
@@ -208,25 +190,32 @@ namespace UsersService
                 await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
             }
         }
-
-        public async Task<FullUserDTO> loginUser(LoginUserDTO loginUserDTO)
+        public async Task<LogedUserDTO> loginUser(LoginUserDTO loginUserDTO)
         {
-            var users = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, User>>("UserEntities");
+            var users = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, User>>("UserEntities");
+
             using (var tx = this.StateManager.CreateTransaction())
             {
-                ConditionalValue<User> result = await users.TryGetValueAsync(tx, loginUserDTO.Email);
-                if (result.HasValue && result.Value.Email == loginUserDTO.Email && result.Value.Password == loginUserDTO.Password)
-                {
-                   return new FullUserDTO(result.Value.Address,result.Value.AverageRating,result.Value.SumOfRatings,result.Value.NumOfRatings,result.Value.Birthday,result.Value.Email,result.Value.IsVerified,result.Value.IsBlocked,result.Value.FirstName,result.Value.LastName,result.Value.Username,result.Value.TypeOfUser,result.Value.ImageFile);
-                }
-                else return new FullUserDTO();
+                var enumerable = await users.CreateEnumerableAsync(tx);
 
+                using (var enumerator = enumerable.GetAsyncEnumerator())
+                {
+                    while (await enumerator.MoveNextAsync(default(CancellationToken)))
+                    {
+                        if (enumerator.Current.Value.Email == loginUserDTO.Email && enumerator.Current.Value.Password == loginUserDTO.Password)
+                        {
+                            return new LogedUserDTO(enumerator.Current.Value.Id, enumerator.Current.Value.TypeOfUser);
+                        }
+                    }
+                }
             }
+            return null;
         }
+
 
         public async Task<List<FullUserDTO>> listUsers()
         {
-            var users = await this.StateManager.GetOrAddAsync<IReliableDictionary<string, User>>("UserEntities");
+            var users = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, User>>("UserEntities");
 
             List<FullUserDTO> userList = new List<FullUserDTO>();
 
@@ -245,7 +234,170 @@ namespace UsersService
 
             return userList;
 
+        }
 
+        public async Task<List<DriverViewDTO>> listDrivers()
+        {
+            var users = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, User>>("UserEntities");
+            List<DriverViewDTO> drivers = new List<DriverViewDTO>();
+            using (var tx = this.StateManager.CreateTransaction())
+            {
+                var enumerable = await users.CreateEnumerableAsync(tx);
+                using (var enumerator = enumerable.GetAsyncEnumerator())
+                {
+                    while (await enumerator.MoveNextAsync(default(CancellationToken)))
+                    {
+                        if (enumerator.Current.Value.TypeOfUser == UserRoles.Roles.Driver)
+                        {
+                            drivers.Add(new DriverViewDTO(enumerator.Current.Value.Email, enumerator.Current.Value.FirstName, enumerator.Current.Value.LastName, enumerator.Current.Value.Username, enumerator.Current.Value.IsBlocked, enumerator.Current.Value.AverageRating, enumerator.Current.Value.Id,enumerator.Current.Value.Status));
+                        }
+                    }
+                }
+            }
+
+            return drivers;
+
+        }
+
+        public async Task<bool> changeDriverStatus(Guid id, bool status)
+        {
+            var users = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, User>>("UserEntities");
+            using (var tx = this.StateManager.CreateTransaction())
+            {
+                ConditionalValue<User> result = await users.TryGetValueAsync(tx, id);
+                if (result.HasValue)
+                {
+                    User user = result.Value;
+                    user.IsBlocked = status;
+                    await users.SetAsync(tx, id, user);
+
+                    await dataRepo.UpdateEntity(id, status);
+
+                    await tx.CommitAsync();
+
+                    return true;
+                }
+                else return false;
+
+
+            }
+
+        }
+
+        public async Task<FullUserDTO> changeUserFields(UserForUpdateOverNetwork user)
+        {
+            var users = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, User>>("UserEntities");
+            using (var tx = this.StateManager.CreateTransaction())
+            {
+                ConditionalValue<User> result = await users.TryGetValueAsync(tx, user.Id);
+                if (result.HasValue)
+                {
+                    User userFromReliable = result.Value;
+
+                    if (!string.IsNullOrEmpty(user.Email)) userFromReliable.Email = user.Email;
+
+                    if (!string.IsNullOrEmpty(user.FirstName)) userFromReliable.FirstName = user.FirstName;
+
+                    if (!string.IsNullOrEmpty(user.LastName)) userFromReliable.LastName = user.LastName;
+
+                    if (!string.IsNullOrEmpty(user.Address)) userFromReliable.Address = user.Address;
+
+                    if (user.Birthday != DateTime.MinValue) userFromReliable.Birthday = user.Birthday;
+
+                    if (!string.IsNullOrEmpty(user.Password)) userFromReliable.Password = user.Password;
+
+                    if (!string.IsNullOrEmpty(user.Username)) userFromReliable.Username = user.Username;
+
+                    if (user.ImageFile != null && user.ImageFile.FileContent != null && user.ImageFile.FileContent.Length > 0) userFromReliable.ImageFile = user.ImageFile;
+
+                    await users.TryRemoveAsync(tx, user.Id); // ukloni ovog proslog 
+
+                    await users.AddAsync(tx, userFromReliable.Id, userFromReliable); // dodaj ga prvo u reliable 
+
+                    if (user.ImageFile != null && user.ImageFile.FileContent != null && user.ImageFile.FileContent.Length > 0) // ako je promenjena slika u reliable upisi je i u blob 
+                    {
+                        CloudBlockBlob blob = await dataRepo.GetBlockBlobReference("users", $"image_{userFromReliable.Id}"); // nadji prethodni blok u blobu
+                        await blob.DeleteIfExistsAsync(); // obrisi ga 
+
+                        CloudBlockBlob newblob = await dataRepo.GetBlockBlobReference("users", $"image_{userFromReliable.Id}"); // kreiraj za ovaj novi username
+                        newblob.Properties.ContentType = userFromReliable.ImageFile.ContentType;
+                        await newblob.UploadFromByteArrayAsync(userFromReliable.ImageFile.FileContent, 0, userFromReliable.ImageFile.FileContent.Length); // upload novu sliku 
+                    }
+
+                    await dataRepo.UpdateUser(user, userFromReliable); // sacuva ga u bazu 
+                    await tx.CommitAsync();
+                    return UserMapper.MapUserToFullUserDto(userFromReliable);
+
+                }
+                else return new FullUserDTO();
+            }
+
+        }
+
+        public async Task<FullUserDTO> GetUserInfo(Guid id)
+        {
+            var users = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, User>>("UserEntities");
+            using (var tx = this.StateManager.CreateTransaction())
+            {
+                ConditionalValue<User> result = await users.TryGetValueAsync(tx, id);
+                if (result.HasValue)
+                {
+                    FullUserDTO user = UserMapper.MapUserToFullUserDto(result.Value);
+                    return user;
+                }
+                else return new FullUserDTO();
+
+
+            }
+        }
+
+        public async Task<bool> VerifyDriver(Guid id, string email, string action)
+        {
+            var users = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, User>>("UserEntities");
+            using (var tx = this.StateManager.CreateTransaction())
+            {
+                ConditionalValue<User> result = await users.TryGetValueAsync(tx, id);
+                if (result.HasValue)
+                {
+                    User userForChange = result.Value;
+                    if (action == "Prihvacen")
+                    {
+                        userForChange.IsVerified = true;
+                        userForChange.Status = Status.Prihvacen;
+                    }else userForChange.Status = Status.Odbijen;
+
+                    await users.SetAsync(tx, id, userForChange);
+
+                    await dataRepo.UpdateDriverStatus(id, action);
+
+                    await tx.CommitAsync();
+                    return true;
+
+                }
+                else return false;
+            }
+        }
+
+        public async Task<List<DriverViewDTO>> GetNotVerifiedDrivers()
+        {
+            var users = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, User>>("UserEntities");
+            List<DriverViewDTO> drivers = new List<DriverViewDTO>();
+            using (var tx = this.StateManager.CreateTransaction())
+            {
+                var enumerable = await users.CreateEnumerableAsync(tx);
+                using (var enumerator = enumerable.GetAsyncEnumerator())
+                {
+                    while (await enumerator.MoveNextAsync(default(CancellationToken)))
+                    {
+                        if (enumerator.Current.Value.TypeOfUser == UserRoles.Roles.Driver && enumerator.Current.Value.Status != Status.Odbijen)
+                        {
+                            drivers.Add(new DriverViewDTO(enumerator.Current.Value.Email, enumerator.Current.Value.FirstName, enumerator.Current.Value.LastName, enumerator.Current.Value.Username, enumerator.Current.Value.IsBlocked, enumerator.Current.Value.AverageRating, enumerator.Current.Value.Id, enumerator.Current.Value.Status));
+                        }
+                    }
+                }
+            }
+
+            return drivers;
         }
     }
 }
