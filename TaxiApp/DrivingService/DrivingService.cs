@@ -46,8 +46,6 @@ namespace DrivingService
                         {
 
                             await roadTrips.AddAsync(tx, trip.TripId, trip);
-
-
                             RoadTripEntity entity = new RoadTripEntity(trip.RiderId, trip.DriverId, trip.CurrentLocation, trip.Destination, trip.Accepted, trip.Price, trip.TripId, trip.SecondsToDriverArrive);
                             TableOperation operation = TableOperation.Insert(entity);
                             await dataRepo.Trips.ExecuteAsync(operation);
@@ -167,7 +165,7 @@ namespace DrivingService
                                 }
                                 else if (enumerator.Current.Value.Accepted && enumerator.Current.Value.SecondsToDriverArrive > 0)
                                 {
-                                    enumerator.Current.Value.SecondsToDriverArrive--; //umanjuj za sekundu dolazak driver-a 
+                                    enumerator.Current.Value.SecondsToDriverArrive--; 
                                 }
                                 else if (enumerator.Current.Value.Accepted && enumerator.Current.Value.SecondsToDriverArrive == 0 && enumerator.Current.Value.SecondsToEndTrip > 0)
                                 {
@@ -191,6 +189,11 @@ namespace DrivingService
             }
         }
 
+        /// <summary>
+        /// Rider id is sent
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<RoadTrip> GetCurrentRoadTrip(Guid id)
         {
             var roadTrip = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, RoadTrip>>("Trips");
@@ -269,7 +272,7 @@ namespace DrivingService
                     {
                         // azuriranje polja u reliable 
                         RoadTrip tripForAccept = result.Value;
-                        tripForAccept.SecondsToEndTrip = 60;
+                        tripForAccept.SecondsToEndTrip = 60; // ovde mozda da se zove servis za estimaciju opet 
                         tripForAccept.DriverId = driverId;
                         tripForAccept.Accepted = true;
                         await roadTrip.SetAsync(tx, tripForAccept.TripId, tripForAccept);
@@ -281,40 +284,6 @@ namespace DrivingService
                         else return null;
                     }
                     else return null;
-
-                }
-            }
-
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        public async Task<bool> FinishTrip(Guid tripId)
-        {
-            var roadTrip = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, RoadTrip>>("Trips");
- 
-            try
-            {
-                using (var tx = StateManager.CreateTransaction())
-                {
-                    ConditionalValue<RoadTrip> result = await roadTrip.TryGetValueAsync(tx, tripId);
-
-                    if (result.HasValue)
-                    {
-                        // azuriranje polja u reliable 
-                        RoadTrip tripForAccept = result.Value;
-                        tripForAccept.IsFinished = true;
-                        await roadTrip.SetAsync(tx, tripForAccept.TripId, tripForAccept);
-                        if (await dataRepo.FinishTrip(tripId))
-                        {
-                            await tx.CommitAsync();
-                            return true;
-                        }
-                        else return false;
-                    }
-                    else return false;
 
                 }
             }
@@ -436,9 +405,38 @@ namespace DrivingService
                     {
                         while (await enumerator.MoveNextAsync(default(CancellationToken)))
                         {
-                            if ((enumerator.Current.Value.RiderId == id && enumerator.Current.Value.IsFinished ==false && enumerator.Current.Value.Accepted))
+                            if ((enumerator.Current.Value.RiderId == id && enumerator.Current.Value.IsFinished ==false))
                             {
                                 return enumerator.Current.Value;    
+                            }
+                        }
+                    }
+                }
+                return null;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<RoadTrip> GetCurrentTripDriver(Guid id)
+        {
+            var roadTrip = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, RoadTrip>>("Trips");
+            try
+            {
+                using (var tx = StateManager.CreateTransaction())
+                {
+
+                    var enumerable = await roadTrip.CreateEnumerableAsync(tx);
+
+                    using (var enumerator = enumerable.GetAsyncEnumerator())
+                    {
+                        while (await enumerator.MoveNextAsync(default(CancellationToken)))
+                        {
+                            if ((enumerator.Current.Value.DriverId == id && enumerator.Current.Value.IsFinished == false))
+                            {
+                                return enumerator.Current.Value;
                             }
                         }
                     }

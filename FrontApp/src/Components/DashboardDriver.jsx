@@ -15,6 +15,7 @@ import { getAllAvailableRides } from '../Services/DriverService.js'
 import { AcceptDrive } from '../Services/DriverService.js';
 import { FinishRide } from '../Services/DriverService.js';
 import RealTimeClock from './RealTimeClock.jsx';
+import {getCurrentRide} from '../Services/DriverService.js';
 export default function DashboardDriver(props) {
 
     const user = props.user;
@@ -25,6 +26,7 @@ export default function DashboardDriver(props) {
     const navigate = useNavigate();
 
     const apiForCurrentUserInfo = process.env.REACT_APP_GET_USER_INFO;
+    const apiEndpointForCurrentRide = process.env.REACT_APP_CURRENT_TRIP_DRIVER;
     const [currentUser, setUserInfo] = useState('');
 
     const [address, setAddress] = useState('');
@@ -62,6 +64,8 @@ export default function DashboardDriver(props) {
     const [minutesToDriverArrive, setMinutesToDriverArrive] = useState(null);
     const [minutesToEndTrip, setMinutesToEndTrip] = useState(null);
 
+
+    const [clockSimulation, setClockSimulation] = useState();
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
@@ -175,6 +179,8 @@ export default function DashboardDriver(props) {
         setIsEditing(true);
     };
 
+
+
     const handleCancelClick = () => {
         setIsEditing(false);
         setAddress(initialUser.address);
@@ -209,7 +215,49 @@ export default function DashboardDriver(props) {
             reader.readAsDataURL(file);
         }
     };
-    console.log(minutesToEndTrip);
+
+
+    useEffect(() => {
+        const fetchRideData = async () => {
+            try {
+                const data = await getCurrentRide(jwt, apiEndpointForCurrentRide, userId);
+                console.log("Active trip:", data);
+
+                if (data.error && data.error.status === 400) {
+                    setClockSimulation("You don't have an active trip!");
+                    return;
+                }
+
+                if (data.trip) {
+                    console.log("Active trip:", data.trip);
+
+                    if (data.trip.accepted && data.trip.secondsToDriverArrive > 0) {
+                        setClockSimulation(`You will arrive in: ${data.trip.secondsToDriverArrive} seconds`);
+                    } else if (data.trip.accepted && data.trip.secondsToEndTrip > 0) {
+                        setClockSimulation(`The trip will end in: ${data.trip.secondsToEndTrip} seconds`);
+                    } else if (data.trip.accepted && data.trip.secondsToDriverArrive === 0 && data.trip.secondsToEndTrip === 0) {
+                        setClockSimulation("Your trip has ended");
+                    }
+                } else {
+                    setClockSimulation("You don't have an active trip!");
+                }
+            } catch (error) {
+                console.log("Error fetching ride data:", error);
+                setClockSimulation("An error occurred while fetching the trip data.");
+            }
+        };
+
+
+        // Fetch data immediately on mount
+        fetchRideData();
+
+        // Set up an interval to fetch data every 1 second
+        const intervalId = setInterval(fetchRideData, 1000);
+
+        // Clean up the interval when the component is unmounted
+        return () => clearInterval(intervalId);
+    }, [jwt, apiEndpointForCurrentRide, userId]);
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
             <div className="black-headerDashboar flex justify-between items-center p-4">
@@ -242,6 +290,7 @@ export default function DashboardDriver(props) {
                     <div>
                         <hr style={{ width: '330px' }}></hr>
                     </div>
+                    { clockSimulation == "You don't have an active trip!" ? (
                     <>
                         <button className="button" onClick={handleEditProfile}>
                             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -266,7 +315,8 @@ export default function DashboardDriver(props) {
                             </>
                         ) : null}
                     </>
-
+                    ): null }
+                     <p style={{ color: 'white', marginTop: '20px', marginLeft: '20px' }}>{clockSimulation}</p>
 
                 </div>
                 {!tripIsActive ? (
@@ -367,9 +417,11 @@ export default function DashboardDriver(props) {
                                                         <button className='edit-button' onClick={handleCancelClick}>Cancel</button>
                                                     </div>
                                                 ) : (
-                                                    <div>
-                                                        <button className='edit-button' onClick={handleEditClick}>Edit</button>
-                                                    </div>
+                                                    (clockSimulation === "You don't have an active trip!") ? (
+                                                        <div>
+                                                            <button className='edit-button' onClick={handleEditClick}>Edit</button>
+                                                        </div>
+                                                    ) : null
                                                 )
                                             ) : null}
 
@@ -377,55 +429,51 @@ export default function DashboardDriver(props) {
                                         </div>
                                     </div>
                                 </div>
-                            ) : view == 'rides' ? (
-                                <div className="centered" style={{ width: '100%', height: '10%' }}>
-                                    <table className="styled-table" style={{ width: '70%' }}>
-                                        <thead>
-                                            <tr>
-                                                <th>Location</th>
-                                                <th>Destination</th>
-                                                <th>Price</th>
-                                                <th>Confirmation</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {rides.map((val, key) => (
-                                                <tr key={val.id}>
-                                                    <td>{val.currentLocation}</td>
-                                                    <td>{val.destination}</td>
-                                                    <td>{val.price}</td>
-                                                    <td>
-                                                        <button
-                                                            style={{
-                                                                borderRadius: '20px',
-                                                                padding: '5px 10px',
-                                                                color: 'white',
-                                                                fontWeight: 'bold',
-                                                                cursor: 'pointer',
-                                                                outline: 'none',
-                                                                background: 'green'
-                                                            }}
-                                                            onClick={() => handleAcceptNewDrive(val.tripId
-                                                            )}
-                                                        >
-                                                            Accept
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-
-
-
                             ) : (
-                                <div className="centered" style={{ width: '100%', height: '10%' }}>
-                                    <div>No ticket is active</div>
-                                </div>
+                                view === 'rides' ? (
+                                    (clockSimulation === "You don't have an active trip!") ? (
+                                        <div className="centered" style={{ width: '100%', height: '10%' }}>
+                                            <table className="styled-table" style={{ width: '70%' }}>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Location</th>
+                                                        <th>Destination</th>
+                                                        <th>Price</th>
+                                                        <th>Confirmation</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {rides.map((val) => (
+                                                        <tr key={val.id}>
+                                                            <td>{val.currentLocation}</td>
+                                                            <td>{val.destination}</td>
+                                                            <td>{val.price}</td>
+                                                            <td>
+                                                                <button
+                                                                    style={{
+                                                                        borderRadius: '20px',
+                                                                        padding: '5px 10px',
+                                                                        color: 'white',
+                                                                        fontWeight: 'bold',
+                                                                        cursor: 'pointer',
+                                                                        outline: 'none',
+                                                                        background: 'green'
+                                                                    }}
+                                                                    onClick={() => handleAcceptNewDrive(val.tripId)}
+                                                                >
+                                                                    Accept
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    ) : null
+                                ) : null
                             )}
                         </div>
-
+                                
                     </div>
                 ) : null}
 

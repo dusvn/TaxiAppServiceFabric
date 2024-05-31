@@ -38,19 +38,21 @@ export  async function AcceptDrive(apiEndpoint, driverId,idRide,jwt) {
     }
 }
 
-export  async function FinishRide(apiEndpoint, tripId,jwt) {
+export async function getCurrentRide(jwt, apiEndpoint,userId) {
     try {
-        const response = await axios.put(apiEndpoint, {
-            tripId : tripId,
-        }, {
+        const config = {
             headers: {
-                Authorization: `Bearer ${jwt}`
+                Authorization: `Bearer ${jwt}`,
+                'Content-Type': 'application/json'
             }
-        });
+        };
+        console.log(apiEndpoint);
+        const queryParams = qs.stringify({ id: userId });
 
+        const url = `${apiEndpoint}?${queryParams}`;
+        const response = await axios.get(url, config);
         return response.data;
     } catch (error) {
-        console.error('Error while calling api for login user:', error);
-        return error;
+        return { error: error.response };
     }
 }

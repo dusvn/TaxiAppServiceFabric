@@ -16,6 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Common.Models;
 using Common.Interfaces;
+using System.Net;
 
 namespace WebApi
 {
@@ -112,7 +113,7 @@ namespace WebApi
                         app.UseStaticFiles();
                         app.UseFileServer();
                         app.UseDefaultFiles();
-                        app.UseWebSockets();
+ 
 
                         return app;
 

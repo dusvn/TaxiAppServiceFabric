@@ -9,8 +9,7 @@ import { makeImage, convertDateTimeToDateOnly, changeUserFields } from '../Servi
 import { getUserInfo } from '../Services/ProfileService';
 import '../Style/NewDrive.css';
 import { getEstimation, AcceptDrive, convertTimeStringToMinutes } from '../Services/Estimation.js';
-import {getCurrentRide} from '../Services/RiderService.js';
-import {getCurrentTrip} from '../Services/RiderService.js';
+import { getCurrentRide } from '../Services/RiderService.js';
 export default function RiderDashboard(props) {
     const user = props.user;
 
@@ -22,8 +21,7 @@ export default function RiderDashboard(props) {
 
     const apiEndpointEstimation = process.env.REACT_APP_GET_ESTIMATION_PRICE;
     const apiEndpointAcceptDrive = process.env.REACT_APP_ACCEPT_SUGGESTED_DRIVE;
-    const apiEpointGetCurrentDrive= process.env.REACT_APP_GET_ACTIVE_TRIP;
-    const apiEndpointCurrentTrip = process.env.REACT_APP_CURRENT_TRIP;
+    const apiEndpointForCurrentDrive = process.env.REACT_APP_CURRENT_TRIP;
 
     const [destination, setDestination] = useState(''); // destination 
     const [currentLocation, setCurrentLocation] = useState(''); // current location
@@ -35,13 +33,9 @@ export default function RiderDashboard(props) {
     const userId = user.id; // user id 
     {/*This is data for drive */ }
 
-    const [activeDestination,setActiveDestination] = useState('');
-    const [activeLocation,setActiveLocation] = useState('');
-    const [activePrice,setActivePrice]= useState('');
-    const [activeIsAccepted,setActiveIsAccepted] = useState(false);
-    const [activeMinutesToArrive,setActiveMinutesToArrive] = useState('');
-    const [activeMinutesToEndTrip,setActiveMinutesToEndTrip] = useState('');
-    const [activeTripId,setActiveTripId] = useState('');
+    const [activeTrip, setActiveTrip] = useState();
+
+
 
     const handleEstimationSubmit = async () => {
         try {
@@ -66,18 +60,13 @@ export default function RiderDashboard(props) {
         try {
             const data = await AcceptDrive(apiEndpointAcceptDrive, userId, jwt, currentLocation, destination, estimation, isAccepted, driversArivalSeconds);
 
-            setActiveTripId(data.drive.tripId);
-            setActiveDestination(data.drive.destination);
-            setActiveLocation(data.drive.currentLocation);
-            setActiveMinutesToArrive(data.drive.minutesToDriverArrive);
-            setActiveMinutesToEndTrip(data.drive.minutesToEndTrip);
-            setActivePrice(data.drive.price);
-            setActiveIsAccepted(data.drive.accepted);     
             if (data.message && data.message == "Request failed with status code 400") {
                 alert("You have already submited tiket!");
-                setView('currentTicket');
+                setDriversArivalSeconds('');
+                setEstimation('');
+                setCurrentLocation('');
+                setDestination('');
             }
-            console.log("Result from creating new drive", data);
         } catch (error) {
             console.error("Error when I try to show profile", error);
         }
@@ -124,7 +113,7 @@ export default function RiderDashboard(props) {
     const [selectedFile, setSelectedFile] = useState(null);
 
     const [initialUser, setInitialUser] = useState({});
-
+    const [clockSimulation, setClockSimulation] = useState();
 
     const handleSignOut = () => {
         localStorage.removeItem('token');
@@ -164,15 +153,12 @@ export default function RiderDashboard(props) {
 
     const handleNewDriveClick = () => {
         setView('newDrive');
-        
+
     }
 
     const handleEditProfile = () => {
         setView('editProfile');
     }
-
-
-    //trip koji treba da se usefetchuje 
 
 
     const handleImageChange = (e) => {
@@ -243,24 +229,51 @@ export default function RiderDashboard(props) {
 
 
 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //       try {
-    //         const data = await getCurrentTrip(jwt,apiEndpointCurrentTrip,userId);
-    //         console.log("This is data from current accepted trip",data);
-    //         if(data && data.trip.accepted){
-    //             console.log("Krece odbrojavanje");
-    //         }
+    useEffect(() => {
+        const fetchRideData = async () => {
+            try {
+                const data = await getCurrentRide(jwt, apiEndpointForCurrentDrive, userId);
+                console.log("Active trip:", data);
 
-    //       } catch (error) {
-    //         console.error("Error fetching active trip data:", error);
-    //       }
-    //     };
+                if (data.error && data.error.status === 400) {
+                    setClockSimulation("You don't have an active trip!");
+                    return;
+                }
 
-    //     fetchData();
-    //   }, [view]);
+                if (data.trip) {
+                    console.log("Active trip:", data.trip);
 
-    console.log(activeDestination);
+                    if (!data.trip.accepted) {
+                        setClockSimulation("Your current ticket is not accepted by any driver!");
+                    } else if (data.trip.accepted && data.trip.secondsToDriverArrive > 0) {
+                        setClockSimulation(`The driver will arrive in: ${data.trip.secondsToDriverArrive} seconds`);
+                    } else if (data.trip.accepted && data.trip.secondsToEndTrip > 0) {
+                        setClockSimulation(`The trip will end in: ${data.trip.secondsToEndTrip} seconds`);
+                    } else if (data.trip.accepted && data.trip.secondsToDriverArrive === 0 && data.trip.secondsToEndTrip === 0) {
+                        setClockSimulation("Your trip has ended");
+                    }
+                } else {
+                    setClockSimulation("You don't have an active trip!");
+                }
+            } catch (error) {
+                console.log("Error fetching ride data:", error);
+                setClockSimulation("An error occurred while fetching the trip data.");
+            }
+        };
+
+
+        // Fetch data immediately on mount
+        fetchRideData();
+
+        // Set up an interval to fetch data every 1 second
+        const intervalId = setInterval(fetchRideData, 1000);
+
+        // Clean up the interval when the component is unmounted
+        return () => clearInterval(intervalId);
+    }, [jwt, apiEndpointForCurrentDrive, userId]);
+
+    console.log("This is clock simulation:", clockSimulation);
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
             <div className="black-headerDashboar flex justify-between items-center p-4">
@@ -279,24 +292,31 @@ export default function RiderDashboard(props) {
                     <div>
                         <hr style={{ width: '330px' }} />
                     </div>
-                    <button className="button" onClick={handleEditProfile}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <MdPerson size={25} style={{ marginRight: '30px' }} />
-                            <span>Profile</span>
-                        </div>
-                    </button>
-                    <button className="button" onClick={handleNewDriveClick}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <FaCar size={25} style={{ marginRight: '30px' }} />
-                            <span>New drive</span>
-                        </div>
-                    </button>
-                    <button className="button">
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <FaRoad size={25} style={{ marginRight: '30px' }} />
-                            <span>Driving history</span>
-                        </div>
-                    </button>
+                    <div>
+                        {clockSimulation == "Your current ticket is not accepted by any driver!" || clockSimulation == "You don't have an active trip!" ? (
+                            <>
+                                <button className="button" onClick={handleEditProfile}>
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <MdPerson size={25} style={{ marginRight: '30px' }} />
+                                        <span>Profile</span>
+                                    </div>
+                                </button>
+                                <button className="button" onClick={handleNewDriveClick}>
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <FaCar size={25} style={{ marginRight: '30px' }} />
+                                        <span>New drive</span>
+                                    </div>
+                                </button>
+                                <button className="button">
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <FaRoad size={25} style={{ marginRight: '30px' }} />
+                                        <span>Driving history</span>
+                                    </div>
+                                </button>
+                            </>
+                        ) : null}
+                        <p style={{ color: 'white', marginTop: '20px', marginLeft: '20px' }}>{clockSimulation}</p>
+                    </div>
                 </div>
 
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -392,16 +412,16 @@ export default function RiderDashboard(props) {
                                                 <button className='edit-button' onClick={handleCancelClick}>Cancel</button>
                                             </div>
                                         ) : (
-                                            <div>
-                                                <button className='edit-button' onClick={handleEditClick}>Edit</button>
-                                            </div>
+                                            (clockSimulation === "Your current ticket is not accepted by any driver!" || clockSimulation === "You don't have an active trip!") ? (
+                                                <div>
+                                                    <button className='edit-button' onClick={handleEditClick}>Edit</button>
+                                                </div>
+                                            ) : null
                                         )}
                                     </div>
                                 </div>
                             </div>
-                        ) : view == 'newDrive' ? (
-
-
+                        ) : view === 'newDrive' ? (
                             <div style={{
                                 width: '100%',
                                 height: '100vh',
@@ -425,7 +445,6 @@ export default function RiderDashboard(props) {
                                     <div style={{
                                         fontSize: '40px',
                                         textAlign: 'left',
-
                                     }}>
                                         Go anywhere with
                                     </div>
@@ -440,6 +459,7 @@ export default function RiderDashboard(props) {
                                     <input
                                         type="text"
                                         placeholder="Enter location"
+                                        value={currentLocation}
                                         style={{
                                             width: '80%',
                                             margin: '10px 0',
@@ -454,6 +474,7 @@ export default function RiderDashboard(props) {
                                     <input
                                         type="text"
                                         placeholder="Enter destination"
+                                        value={destination}
                                         style={{
                                             width: '80%',
                                             margin: '10px 0',
@@ -506,7 +527,7 @@ export default function RiderDashboard(props) {
                                             boxShadow: '0 0 0 1px white inset'
                                         }}
                                     />
-                                    {estimation !== '' && driversArivalSeconds != '' && (
+                                    {estimation !== '' && driversArivalSeconds !== '' && (
                                         <button
                                             style={{
                                                 width: '80%',
@@ -523,18 +544,14 @@ export default function RiderDashboard(props) {
                                             Accept
                                         </button>
                                     )}
-
                                 </div>
                             </div>
-                        ) :  <div className="centered" style={{ width: '100%', height: '10%' }}>
-                          
-                       </div>
-                       
-                        }
+                        ) : null}
                     </div>
                 </div>
             </div>
         </div>
     );
+
 
 }

@@ -406,48 +406,7 @@ namespace WebApi.Controllers
             }
         }
 
-
-        [Authorize(Policy = "Rider")]
-        [HttpGet]
-        public async Task<IActionResult> GetAciteTrip([FromQuery] Guid id)
-        {
-            try
-            {
-                var fabricClient = new FabricClient();
-                RoadTrip result = null;
-
-                var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/DrivingService"));
-                foreach (var partition in partitionList)
-                {
-                    var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
-                    var proxy = ServiceProxy.Create<IDrive>(new Uri("fabric:/TaxiApp/DrivingService"), partitionKey);
-                    var partitionResult = await proxy.GetCurrentRoadTrip(id);
-                    if (partitionResult != null)
-                    {
-                        result = partitionResult;
-                        break;
-                    }
-                }
-
-                if (result != null)
-                {
-                    var response = new
-                    {
-                        trip = result,
-                        message = "Successfully get current trip"
-                    };
-                    return Ok(response);
-                }
-                else
-                {
-                    return BadRequest("This id does not exist");
-                }
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "An error occurred while retrieving user info");
-            }
-        }
+       
 
         [Authorize(Policy = "Admin")]
         [HttpPut]
@@ -538,48 +497,6 @@ namespace WebApi.Controllers
             }
         }
 
-        [Authorize(Policy = "Driver")]
-        [HttpPut]
-        public async Task<IActionResult> FinishTrip([FromBody] FinishTripDTO trip)
-        {
-            try
-            {
-                var fabricClient = new FabricClient();
-                bool result = false;
-
-                var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/DrivingService"));
-                foreach (var partition in partitionList)
-                {
-                    var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
-                    var proxy = ServiceProxy.Create<IDrive>(new Uri("fabric:/TaxiApp/DrivingService"), partitionKey);
-                    var partitionResult = await proxy.FinishTrip(trip.TripId);
-                    if (partitionResult != null)
-                    {
-                        result = partitionResult;
-                        break;
-                    }
-                }
-
-                if (result != null)
-                {
-                    var response = new
-                    {
-                        tripEnd = result,
-                        message = "Trip is finished!"
-                    };
-                    return Ok(response);
-                }
-                else
-                {
-                    return BadRequest("This id does not exist");
-                }
-
-            }
-            catch
-            {
-                return BadRequest("Something went wrong!");
-            }
-        }
 
 
         [Authorize(Policy = "Admin")]
@@ -816,7 +733,7 @@ namespace WebApi.Controllers
 
         [Authorize(Policy = "Rider")]
         [HttpGet]
-        public async Task<IActionResult> GetCurrentTrip(Guid riderId)
+        public async Task<IActionResult> GetCurrentTrip(Guid id)
         {
             try
             {
@@ -829,7 +746,7 @@ namespace WebApi.Controllers
                 {
                     var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
                     var proxy = ServiceProxy.Create<IDrive>(new Uri("fabric:/TaxiApp/DrivingService"), partitionKey);
-                    var parititonResult = await proxy.GetCurrentTrip(riderId);
+                    var parititonResult = await proxy.GetCurrentTrip(id);
                     if (parititonResult != null)
                     {
                         result = parititonResult;
@@ -844,13 +761,13 @@ namespace WebApi.Controllers
                     var response = new
                     {
                         trip = result,
-                        message = "Succesfuly get list completed rides"
+                        message = "Succesfuly get current ride"
                     };
                     return Ok(response);
                 }
                 else
                 {
-                    return BadRequest("Incorrect email or password");
+                    return BadRequest();
                 }
 
             }
@@ -859,6 +776,54 @@ namespace WebApi.Controllers
                 throw;
             }
         }
+
+
+        [Authorize(Policy = "Driver")]
+        [HttpGet]
+        public async Task<IActionResult> GetCurrentTripDriver(Guid id)
+        {
+            try
+            {
+
+                var fabricClient = new FabricClient();
+                RoadTrip result = null;
+
+                var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/DrivingService"));
+                foreach (var partition in partitionList)
+                {
+                    var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
+                    var proxy = ServiceProxy.Create<IDrive>(new Uri("fabric:/TaxiApp/DrivingService"), partitionKey);
+                    var parititonResult = await proxy.GetCurrentTripDriver(id);
+                    if (parititonResult != null)
+                    {
+                        result = parititonResult;
+                        break;
+                    }
+
+                }
+
+                if (result != null)
+                {
+
+                    var response = new
+                    {
+                        trip = result,
+                        message = "Succesfuly get current ride"
+                    };
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
 
 
     }
