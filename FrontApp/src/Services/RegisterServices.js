@@ -67,7 +67,6 @@ export async function RegularRegisterApiCall(
         repeatPasswordError,
         imageUrlError
     );
-
     if (isCompleted) {
         const formData = new FormData();
         formData.append('firstName', firstName);
@@ -80,18 +79,20 @@ export async function RegularRegisterApiCall(
         formData.append('typeOfUser', typeOfUser);
         formData.append('username', username);
         formData.append('imageUrl', imageUrl);
-
+        
         if (formData.get("password") === SHA256(repeatPassword).toString()) {
             try {
                 const response = await axios.post(apiEndpoint, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
+                 
                 });
-
-                console.log('Success register of user:', response.data);
+                return true;
             } catch (error) {
-                console.error('API call error:', error);
+                if(error.response.status == 409){
+                    alert(error.response.data+"\nTry another email!!!");
+                }
             }
         }
     }

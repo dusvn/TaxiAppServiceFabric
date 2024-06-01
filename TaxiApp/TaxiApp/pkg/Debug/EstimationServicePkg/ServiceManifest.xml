@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ServiceManifest Name="EstimationServicePkg" Version="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ManifestId="a8445f75-b8af-41bd-a4d8-f565af50f03d">
+<ServiceManifest Name="EstimationServicePkg" Version="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ManifestId="38952c89-79a3-4235-9476-d19413aa66ac">
   <ServiceTypes>
     <!-- This is the name of your ServiceType. 
          This name must match the string used in the RegisterServiceAsync call in Program.cs. -->

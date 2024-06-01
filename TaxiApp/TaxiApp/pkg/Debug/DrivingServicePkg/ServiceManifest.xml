@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ServiceManifest Name="DrivingServicePkg" Version="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ManifestId="131b419a-cab3-44df-b524-aff2dbe61a32">
+<ServiceManifest Name="DrivingServicePkg" Version="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ManifestId="319b9ac7-7c84-48fa-ad35-441d11dc9426">
   <ServiceTypes>
     <!-- This is the name of your ServiceType. 
          This name must match the string used in RegisterServiceType call in Program.cs. -->
@@ -12,6 +12,9 @@
         <Program>DrivingService.exe</Program>
       </ExeHost>
     </EntryPoint>
+    <EnvironmentVariables>
+      <EnvironmentVariable Name="DataConnectionString" Value="UseDevelopmentStorage=true"></EnvironmentVariable>
+    </EnvironmentVariables>
   </CodePackage>
   <!-- Config package is the contents of the Config directory under PackageRoot that contains an 
        independently-updateable and versioned set of custom configuration settings for your service. -->

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ServiceManifest Name="WebApiPkg" Version="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ManifestId="9d163dc8-8898-4277-9b2e-17f94ebf7669">
+<ServiceManifest Name="WebApiPkg" Version="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ManifestId="14757c4f-4e0c-4456-b282-fc5aacd0019c">
   <ServiceTypes>
     <!-- This is the name of your ServiceType. 
          This name must match the string used in RegisterServiceType call in Program.cs. -->
@@ -25,7 +25,7 @@
       <!-- This endpoint is used by the communication listener to obtain the port on which to 
            listen. Please note that if your service is partitioned, this port is shared with 
            replicas of different partitions that are placed in your code. -->
-      <Endpoint Protocol="http" Name="ServiceEndpoint" Type="Input" Port="8134" />
+      <Endpoint Protocol="http" Name="ServiceEndpoint" Type="Input" Port="8222" />
     </Endpoints>
   </Resources>
 </ServiceManifest>

@@ -14,6 +14,9 @@ using Microsoft.ServiceFabric.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Common.Models;
+using Common.Interfaces;
+using System.Net;
 
 namespace WebApi
 {
@@ -44,7 +47,7 @@ namespace WebApi
                         //jwt
                         var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
                         var jwtKey = builder.Configuration.GetSection("Jwt:Key").Get<string>();
-
+                        builder.Services.AddTransient<IEmailSender,EmailSender>();
                         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                          .AddJwtBearer(options =>
                          {
@@ -72,6 +75,13 @@ namespace WebApi
                         builder.Services.AddEndpointsApiExplorer();
                         builder.Services.AddSwaggerGen();
                         builder.Services.AddSignalR();
+                        builder.Services.AddAuthorization(options =>
+                        {
+                               options.AddPolicy("Admin", policy => policy.RequireClaim("MyCustomClaim", "Admin"));
+                               options.AddPolicy("Rider", policy => policy.RequireClaim("MyCustomClaim", "Rider"));
+                               options.AddPolicy("Driver", policy => policy.RequireClaim("MyCustomClaim", "Driver"));
+                        });
+
                           builder.Services.AddCors(options =>
                         {
                             options.AddPolicy(name: "cors", builder => {
@@ -82,6 +92,9 @@ namespace WebApi
 
                                 });
                             });
+
+
+                        
                         var app = builder.Build();
                         if (app.Environment.IsDevelopment())
                         {
@@ -90,11 +103,17 @@ namespace WebApi
                         }
                         app.UseCors("cors");
                         app.UseRouting();
+                        app.UseHttpsRedirection();
+
+
+                        app.UseAuthentication();
                         app.UseAuthorization();
+
                         app.MapControllers();
                         app.UseStaticFiles();
                         app.UseFileServer();
                         app.UseDefaultFiles();
+ 
 
                         return app;
 

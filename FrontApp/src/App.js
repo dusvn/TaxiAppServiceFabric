@@ -1,6 +1,7 @@
 import Dashboard from './Components/Dashboard';
 import LoginPage from './Components/Login';
 import Register from './Components/Register';
+import 'process/browser'; // or require('process/browser');
 
 import {
   BrowserRouter as Router,
@@ -14,9 +15,9 @@ function App() {
     <>
         <Router>
             <Routes>
-                <Route   path="/Register" element={<LoginPage />} />
-                <Route  path="/sadas" element={<Register />} />
-                <Route  exact path='/' element={<Dashboard/>} ></Route>
+                <Route   path="/" element={<LoginPage />} />
+                <Route  path="/Register" element={<Register />} />
+                <Route  exact path='/Dashboard' element={<Dashboard/>} ></Route>
             </Routes>
         </Router>
     </>

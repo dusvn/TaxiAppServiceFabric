@@ -30,5 +30,9 @@ namespace Common.DTO
             ContentType = contentType;
             FileContent = fileContent;
         }
+
+        public FileUploadDTO()
+        {
+        }
     }
 }
