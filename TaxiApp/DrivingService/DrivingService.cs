@@ -17,6 +17,8 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Table;
 using System.Transactions;
 using Microsoft.ServiceFabric.Data;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
+using Microsoft.ServiceFabric.Services.Client;
 namespace DrivingService
 {
     /// <summary>
@@ -159,7 +161,7 @@ namespace DrivingService
 
                             while (await enumerator.MoveNextAsync(default(CancellationToken)))
                             {
-                                if (!enumerator.Current.Value.Accepted) 
+                                if (!enumerator.Current.Value.Accepted || enumerator.Current.Value.IsFinished) 
                                 {
                                     continue;
                                 }
@@ -448,5 +450,90 @@ namespace DrivingService
                 throw;
             }
         }
+
+        public async Task<List<RoadTrip>> GetAllNotRatedTrips()
+        {
+            var roadTrip = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, RoadTrip>>("Trips");
+            List<RoadTrip> trips = new List<RoadTrip>();
+            try
+            {
+                using (var tx = StateManager.CreateTransaction())
+                {
+
+                    var enumerable = await roadTrip.CreateEnumerableAsync(tx);
+
+                    using (var enumerator = enumerable.GetAsyncEnumerator())
+                    {
+                        while (await enumerator.MoveNextAsync(default(CancellationToken)))
+                        {
+                            if (!enumerator.Current.Value.IsRated && enumerator.Current.Value.IsFinished)
+                            {
+                                trips.Add(enumerator.Current.Value);
+                            }
+                        }
+                    }
+                }
+                return trips;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> SubmitRating(Guid tripId, int rating)
+        {
+            var roadTrip = await this.StateManager.GetOrAddAsync<IReliableDictionary<Guid, RoadTrip>>("Trips");
+            bool result = false;
+            var fabricClient = new FabricClient();
+            try
+            {
+                using (var tx = StateManager.CreateTransaction())
+                {
+                    var trip = await roadTrip.TryGetValueAsync(tx, tripId);
+                    if (!trip.HasValue)
+                    {
+                        return false; // Trip not found
+                    }
+
+                   
+                    Guid driverId = trip.Value.DriverId;
+                    var partitionList = await fabricClient.QueryManager.GetPartitionListAsync(new Uri("fabric:/TaxiApp/UsersService"));
+
+                    foreach (var partition in partitionList)
+                    {
+                        var partitionKey = new ServicePartitionKey(((Int64RangePartitionInformation)partition.PartitionInformation).LowKey);
+                        var proxy = ServiceProxy.Create<IRating>(new Uri("fabric:/TaxiApp/UsersService"), partitionKey);
+
+                        try
+                        {
+                            var partitionResult = await proxy.AddRating(driverId, rating);
+                            if (partitionResult)
+                            {
+                                result = true;
+                                trip.Value.IsRated = true;
+                                await roadTrip.SetAsync(tx, trip.Value.TripId, trip.Value);
+                                //update entity in db
+                                await dataRepo.RateTrip(trip.Value.TripId);
+                                break;
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            throw;
+                        }
+                    }
+
+                    await tx.CommitAsync();
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                // Log exception
+                throw new ApplicationException($"Failed to submit rating for TripId: {tripId}", ex);
+            }
+        }
+
     }
 }

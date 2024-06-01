@@ -75,6 +75,22 @@ namespace DrivingService
             }
         }
 
+        public async Task RateTrip(Guid tripId)
+        {
+            TableQuery<RoadTripEntity> rideQuery = new TableQuery<RoadTripEntity>()
+        .Where(TableQuery.GenerateFilterConditionForGuid("TripId", QueryComparisons.Equal, tripId));
+            TableQuerySegment<RoadTripEntity> queryResult = await Trips.ExecuteQuerySegmentedAsync(rideQuery, null);
+
+            if (queryResult.Results.Count > 0)
+            {
+                RoadTripEntity trip = queryResult.Results[0];
+                trip.IsRated = true;    
+                var operation = TableOperation.Replace(trip);
+                await Trips.ExecuteAsync(operation);
+            }
+           
+        }
+
 
         public async Task<bool> FinishTrip(Guid tripId)
         {

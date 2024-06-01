@@ -10,6 +10,9 @@ import { getUserInfo } from '../Services/ProfileService';
 import '../Style/NewDrive.css';
 import { getEstimation, AcceptDrive, convertTimeStringToMinutes } from '../Services/Estimation.js';
 import { getCurrentRide } from '../Services/RiderService.js';
+import RidesRider from './RidesRider.jsx';
+import { FaStar } from 'react-icons/fa';
+import Rate from './Rate.jsx';
 export default function RiderDashboard(props) {
     const user = props.user;
 
@@ -31,7 +34,7 @@ export default function RiderDashboard(props) {
     const [driversArivalSeconds, setDriversArivalSeconds] = useState('');
     const [tripTicketSubmited, setTripTicketSubmited] = useState(false);
     const userId = user.id; // user id 
-    {/*This is data for drive */ }
+    localStorage.setItem("userId", userId);
 
     const [activeTrip, setActiveTrip] = useState();
 
@@ -196,6 +199,10 @@ export default function RiderDashboard(props) {
         setSelectedFile(null);
     };
 
+    const handleDriveHistory = () => {
+        setView('driveHistory');
+    };
+
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
@@ -227,6 +234,9 @@ export default function RiderDashboard(props) {
         fetchUserInfo();
     }, [jwt, apiForCurrentUserInfo, userId]);
 
+    const handleRateTrips = () =>{
+        setView('rateTrips');
+    }
 
 
     useEffect(() => {
@@ -307,10 +317,17 @@ export default function RiderDashboard(props) {
                                         <span>New drive</span>
                                     </div>
                                 </button>
-                                <button className="button">
+                                <button className="button" onClick={handleDriveHistory}>
                                     <div style={{ display: 'flex', alignItems: 'center' }}>
                                         <FaRoad size={25} style={{ marginRight: '30px' }} />
                                         <span>Driving history</span>
+                                    </div>
+                                </button>
+
+                                <button className='button' onClick={handleRateTrips}>
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <FaStar size={25} style={{ marginRight: '30px' }} />
+                                        <span>Rate rides</span>
                                     </div>
                                 </button>
                             </>
@@ -546,12 +563,14 @@ export default function RiderDashboard(props) {
                                     )}
                                 </div>
                             </div>
-                        ) : null}
+                        ) : view === 'driveHistory' ? (
+                            <RidesRider />
+                        ) : view=="rateTrips"? (
+                            <Rate/>
+                            ): null}
                     </div>
                 </div>
             </div>
         </div>
     );
-
-
-}
+}    

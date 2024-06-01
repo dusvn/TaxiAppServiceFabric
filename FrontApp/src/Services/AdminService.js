@@ -71,4 +71,22 @@ export async function VerifyDriver(apiEndpoint, id, status,email, jwt) {
     }
 }
 
+export async function getAllRidesAdmin(jwt, apiEndpoint) {
+    try {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${jwt}`,
+                'Content-Type': 'application/json'
+            }
+        };
+        console.log(apiEndpoint);
+
+        const response = await axios.get(apiEndpoint, config);
+        return response.data;
+    } catch (error) {
+        return { error: error.response };
+    }
+}
+
+
 

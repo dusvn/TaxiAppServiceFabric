@@ -39,6 +39,9 @@ namespace Common.Models
 
         [DataMember]
         public bool IsFinished { get; set;}
+
+        [DataMember]
+        public bool IsRated { get;set; }
         public RoadTrip()
         {
         }
@@ -65,14 +68,16 @@ namespace Common.Models
             DriverId = new Guid("00000000-0000-0000-0000-000000000000"); // that say this trip dont have driver
             SecondsToDriverArrive = minutes*60;
             IsFinished = false;
+            IsRated = false;
         }
 
-        public RoadTrip(string currentLocation, string destination, Guid riderId, Guid driverId, double price, bool accepted, Guid tripId,int minutesToDriverArrive,int minutesToEnd,bool isFinished) : this(currentLocation, destination, riderId, driverId, price, accepted)
+        public RoadTrip(string currentLocation, string destination, Guid riderId, Guid driverId, double price, bool accepted, Guid tripId,int minutesToDriverArrive,int minutesToEnd,bool isFinished,bool isRated) : this(currentLocation, destination, riderId, driverId, price, accepted)
         {
             TripId = tripId;
             SecondsToDriverArrive = minutesToDriverArrive;
             SecondsToEndTrip = minutesToEnd;
             IsFinished = isFinished;
+            IsRated= isRated;
         }
     }
 }

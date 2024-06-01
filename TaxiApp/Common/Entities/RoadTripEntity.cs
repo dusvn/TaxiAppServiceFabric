@@ -34,6 +34,8 @@ namespace Common.Entities
         public int SecondsToEndTrip { get;set;}
 
         public bool IsFinished { get; set; }
+
+        public bool IsRated { get; set; }   
         public RoadTripEntity()
         {
         }
@@ -52,6 +54,7 @@ namespace Common.Entities
             SecondsToDriverArive = minutes;
             SecondsToEndTrip = 0;
             IsFinished = false;
+            IsRated = false;    
         }
     }
 }

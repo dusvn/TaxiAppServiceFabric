@@ -3,24 +3,52 @@
   "WorkspaceRootPath": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{319B9AC7-7C84-48FA-AD35-441D11DC9426}|DrivingService\\DrivingService.csproj|c:\\users\\0010\\desktop\\projekat\\servicefabric\\taxiapp\\drivingservice\\drivingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{319B9AC7-7C84-48FA-AD35-441D11DC9426}|DrivingService\\DrivingService.csproj|solutionrelative:drivingservice\\drivingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{319B9AC7-7C84-48FA-AD35-441D11DC9426}|DrivingService\\DrivingService.csproj|c:\\users\\0010\\desktop\\projekat\\servicefabric\\taxiapp\\drivingservice\\drivingdatarepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{319B9AC7-7C84-48FA-AD35-441D11DC9426}|DrivingService\\DrivingService.csproj|solutionrelative:drivingservice\\drivingdatarepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{3F8040ED-E7B3-405A-82C7-7D2D868C49C6}|UsersService\\UsersService.csproj|c:\\users\\0010\\desktop\\projekat\\servicefabric\\taxiapp\\usersservice\\usersservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3F8040ED-E7B3-405A-82C7-7D2D868C49C6}|UsersService\\UsersService.csproj|solutionrelative:usersservice\\usersservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{14757C4F-4E0C-4456-B282-FC5AACD0019C}|WebApi\\WebApi.csproj|c:\\users\\0010\\desktop\\projekat\\servicefabric\\taxiapp\\webapi\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{14757C4F-4E0C-4456-B282-FC5AACD0019C}|WebApi\\WebApi.csproj|solutionrelative:webapi\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{319B9AC7-7C84-48FA-AD35-441D11DC9426}|DrivingService\\DrivingService.csproj|c:\\users\\0010\\desktop\\projekat\\servicefabric\\taxiapp\\drivingservice\\drivingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{319B9AC7-7C84-48FA-AD35-441D11DC9426}|DrivingService\\DrivingService.csproj|solutionrelative:drivingservice\\drivingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{3F8040ED-E7B3-405A-82C7-7D2D868C49C6}|UsersService\\UsersService.csproj|c:\\users\\0010\\desktop\\projekat\\servicefabric\\taxiapp\\usersservice\\usersdatarepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{3F8040ED-E7B3-405A-82C7-7D2D868C49C6}|UsersService\\UsersService.csproj|solutionrelative:usersservice\\usersdatarepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8CDD7D07-B962-4C00-9663-6256740C7971}|Common\\Common.csproj|c:\\users\\0010\\desktop\\projekat\\servicefabric\\taxiapp\\common\\interfaces\\irating.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8CDD7D07-B962-4C00-9663-6256740C7971}|Common\\Common.csproj|solutionrelative:common\\interfaces\\irating.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8CDD7D07-B962-4C00-9663-6256740C7971}|Common\\Common.csproj|c:\\users\\0010\\desktop\\projekat\\servicefabric\\taxiapp\\common\\interfaces\\iuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8CDD7D07-B962-4C00-9663-6256740C7971}|Common\\Common.csproj|solutionrelative:common\\interfaces\\iuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8CDD7D07-B962-4C00-9663-6256740C7971}|Common\\Common.csproj|c:\\users\\0010\\desktop\\projekat\\servicefabric\\taxiapp\\common\\interfaces\\idrive.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8CDD7D07-B962-4C00-9663-6256740C7971}|Common\\Common.csproj|solutionrelative:common\\interfaces\\idrive.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{14757C4F-4E0C-4456-B282-FC5AACD0019C}|WebApi\\WebApi.csproj|c:\\users\\0010\\desktop\\projekat\\servicefabric\\taxiapp\\webapi\\webapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{14757C4F-4E0C-4456-B282-FC5AACD0019C}|WebApi\\WebApi.csproj|solutionrelative:webapi\\webapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8CDD7D07-B962-4C00-9663-6256740C7971}|Common\\Common.csproj|c:\\users\\0010\\desktop\\projekat\\servicefabric\\taxiapp\\common\\interfaces\\iestimation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8CDD7D07-B962-4C00-9663-6256740C7971}|Common\\Common.csproj|solutionrelative:common\\interfaces\\iestimation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{3F8040ED-E7B3-405A-82C7-7D2D868C49C6}|UsersService\\UsersService.csproj|c:\\users\\0010\\desktop\\projekat\\servicefabric\\taxiapp\\usersservice\\usersservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{3F8040ED-E7B3-405A-82C7-7D2D868C49C6}|UsersService\\UsersService.csproj|solutionrelative:usersservice\\usersservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8CDD7D07-B962-4C00-9663-6256740C7971}|Common\\Common.csproj|c:\\users\\0010\\desktop\\projekat\\servicefabric\\taxiapp\\common\\entities\\roadtripentity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8CDD7D07-B962-4C00-9663-6256740C7971}|Common\\Common.csproj|solutionrelative:common\\entities\\roadtripentity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8CDD7D07-B962-4C00-9663-6256740C7971}|Common\\Common.csproj|c:\\users\\0010\\desktop\\projekat\\servicefabric\\taxiapp\\common\\models\\roadtrip.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8CDD7D07-B962-4C00-9663-6256740C7971}|Common\\Common.csproj|solutionrelative:common\\models\\roadtrip.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8CDD7D07-B962-4C00-9663-6256740C7971}|Common\\Common.csproj|c:\\users\\0010\\desktop\\projekat\\servicefabric\\taxiapp\\common\\mapper\\roadtripmapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8CDD7D07-B962-4C00-9663-6256740C7971}|Common\\Common.csproj|solutionrelative:common\\mapper\\roadtripmapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -30,7 +58,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 12,
           "Children": [
             {
               "$type": "Bookmark",
@@ -38,65 +66,156 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
+              "Title": "DrivingDataRepo.cs",
+              "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\DrivingService\\DrivingDataRepo.cs",
+              "RelativeDocumentMoniker": "DrivingService\\DrivingDataRepo.cs",
+              "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\DrivingService\\DrivingDataRepo.cs",
+              "RelativeToolTip": "DrivingService\\DrivingDataRepo.cs",
+              "ViewState": "AQIAADUAAAAAAAAAAAAYwFYAAAAoAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-01T13:24:18.212Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "IUser.cs",
+              "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\Common\\Interfaces\\IUser.cs",
+              "RelativeDocumentMoniker": "Common\\Interfaces\\IUser.cs",
+              "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\Common\\Interfaces\\IUser.cs",
+              "RelativeToolTip": "Common\\Interfaces\\IUser.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAAlAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-01T16:16:33.458Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "UsersDataRepository.cs",
+              "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\UsersService\\UsersDataRepository.cs",
+              "RelativeDocumentMoniker": "UsersService\\UsersDataRepository.cs",
+              "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\UsersService\\UsersDataRepository.cs",
+              "RelativeToolTip": "UsersService\\UsersDataRepository.cs",
+              "ViewState": "AQIAAFYAAAAAAAAAAAAIwH0AAAAIAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-01T16:08:00.339Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "IEstimation.cs",
+              "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\Common\\Interfaces\\IEstimation.cs",
+              "RelativeDocumentMoniker": "Common\\Interfaces\\IEstimation.cs",
+              "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\Common\\Interfaces\\IEstimation.cs",
+              "RelativeToolTip": "Common\\Interfaces\\IEstimation.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-01T15:53:15.007Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "IRating.cs",
+              "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\Common\\Interfaces\\IRating.cs",
+              "RelativeDocumentMoniker": "Common\\Interfaces\\IRating.cs",
+              "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\Common\\Interfaces\\IRating.cs",
+              "RelativeToolTip": "Common\\Interfaces\\IRating.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAAEAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-01T15:51:38.979Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "RoadTripMapper.cs",
+              "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\Common\\Mapper\\RoadTripMapper.cs",
+              "RelativeDocumentMoniker": "Common\\Mapper\\RoadTripMapper.cs",
+              "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\Common\\Mapper\\RoadTripMapper.cs",
+              "RelativeToolTip": "Common\\Mapper\\RoadTripMapper.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABQAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-01T13:21:22.013Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "RoadTripEntity.cs",
+              "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\Common\\Entities\\RoadTripEntity.cs",
+              "RelativeDocumentMoniker": "Common\\Entities\\RoadTripEntity.cs",
+              "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\Common\\Entities\\RoadTripEntity.cs",
+              "RelativeToolTip": "Common\\Entities\\RoadTripEntity.cs",
+              "ViewState": "AQIAABMAAAAAAAAAAAA1wBAAAAAfAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-01T13:19:20.393Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "RoadTrip.cs",
+              "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\Common\\Models\\RoadTrip.cs",
+              "RelativeDocumentMoniker": "Common\\Models\\RoadTrip.cs",
+              "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\Common\\Models\\RoadTrip.cs",
+              "RelativeToolTip": "Common\\Models\\RoadTrip.cs",
+              "ViewState": "AQIAACgAAAAAAAAAAAAzwAoAAAAZAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-01T13:15:41.34Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
               "Title": "IDrive.cs",
               "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\Common\\Interfaces\\IDrive.cs",
               "RelativeDocumentMoniker": "Common\\Interfaces\\IDrive.cs",
               "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\Common\\Interfaces\\IDrive.cs",
               "RelativeToolTip": "Common\\Interfaces\\IDrive.cs",
-              "ViewState": "AQIAAAwAAAAAAAAAAAAAACsAAAA1AAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABgAAAA0AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-05-31T21:35:58.128Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
               "Title": "UsersService.cs",
               "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\UsersService\\UsersService.cs",
               "RelativeDocumentMoniker": "UsersService\\UsersService.cs",
               "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\UsersService\\UsersService.cs",
               "RelativeToolTip": "UsersService\\UsersService.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "ViewState": "AQIAAH4BAAAAAAAAAADwv6MBAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-05-31T19:01:57.326Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "UsersController.cs",
               "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\WebApi\\Controllers\\UsersController.cs",
               "RelativeDocumentMoniker": "WebApi\\Controllers\\UsersController.cs",
               "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\WebApi\\Controllers\\UsersController.cs",
               "RelativeToolTip": "WebApi\\Controllers\\UsersController.cs",
-              "ViewState": "AQIAABIDAAAAAAAAAAAqwA4DAAA9AAAA",
+              "ViewState": "AQIAAAIDAAAAAAAAAAAcwO0CAAAUAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-05-30T21:51:39.934Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "WebApi.cs",
-              "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\WebApi\\WebApi.cs",
-              "RelativeDocumentMoniker": "WebApi\\WebApi.cs",
-              "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\WebApi\\WebApi.cs",
-              "RelativeToolTip": "WebApi\\WebApi.cs",
-              "ViewState": "AQIAAFsAAAAAAAAAAAAowG0AAAAvAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-05-30T21:51:23.532Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "DrivingService.cs",
               "DocumentMoniker": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\DrivingService\\DrivingService.cs",
               "RelativeDocumentMoniker": "DrivingService\\DrivingService.cs",
               "ToolTip": "C:\\Users\\0010\\Desktop\\projekat\\ServiceFabric\\TaxiApp\\DrivingService\\DrivingService.cs",
               "RelativeToolTip": "DrivingService\\DrivingService.cs",
-              "ViewState": "AQIAAJABAAAAAAAAAAAUwLYBAABAAAAA",
+              "ViewState": "AQIAAOQBAAAAAAAAAAAUwAQCAAAmAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-05-30T21:12:02.208Z",
               "EditorCaption": ""

@@ -13,6 +13,7 @@ import '../Style/Profile.css';
 import { makeImage, convertDateTimeToDateOnly, changeUserFields } from '../Services/ProfileService';
 import { getUserInfo } from '../Services/ProfileService';
 import VerifyDrivers from './VerifyDrivers.jsx';
+import RidesAdmin from './RidesAdmin.jsx';
 
 export default function DashboardAdmin(props) {
 
@@ -139,6 +140,13 @@ export default function DashboardAdmin(props) {
         }
     };
 
+    const handleShowAllRides = async () =>{
+        try{
+            setView('rides');
+        }catch(error){
+            console.error("Error when I try to show all rides", error);
+        }
+    };
 
     const handleEditProfile = async () => {
         try {
@@ -223,7 +231,7 @@ export default function DashboardAdmin(props) {
                             <span>Drivers</span>
                         </div>
                     </button>
-                    <button className="button">
+                    <button className="button" onClick={handleShowAllRides}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <FaRoad size={25} style={{ marginRight: '30px' }} />
                             <span>Rides</span>
@@ -338,6 +346,8 @@ export default function DashboardAdmin(props) {
                             <DriversView />
                         ) : view=='verify' ? (
                             <VerifyDrivers/>
+                        ) : view=='rides' ? (
+                            <RidesAdmin/>
                         ) : null}
                     </div>
 

@@ -401,6 +401,8 @@ C:\Users\0010\Desktop\projekat\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\refint\We
 C:\Users\0010\Desktop\projekat\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\WebApi.pdb
 C:\Users\0010\Desktop\projekat\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\WebApi.genruntimeconfig.cache
 C:\Users\0010\Desktop\projekat\TaxiApp\WebApi\obj\Debug\net8.0\win-x64\ref\WebApi.dll
+C:\Users\0010\Desktop\projekat\ServiceFabric\TaxiApp\WebApi\bin\Debug\net8.0\win-x64\fr\System.ServiceModel.Primitives.resources.dll
+C:\Users\0010\Desktop\projekat\ServiceFabric\TaxiApp\WebApi\bin\Debug\net8.0\win-x64\ja\System.ServiceModel.Primitives.resources.dll
 C:\Users\0010\Desktop\projekat\ServiceFabric\TaxiApp\WebApi\bin\Debug\net8.0\win-x64\appsettings.Development.json
 C:\Users\0010\Desktop\projekat\ServiceFabric\TaxiApp\WebApi\bin\Debug\net8.0\win-x64\appsettings.json
 C:\Users\0010\Desktop\projekat\ServiceFabric\TaxiApp\WebApi\bin\Debug\net8.0\win-x64\WebApi.exe
@@ -448,9 +450,7 @@ C:\Users\0010\Desktop\projekat\ServiceFabric\TaxiApp\WebApi\bin\Debug\net8.0\win
 C:\Users\0010\Desktop\projekat\ServiceFabric\TaxiApp\WebApi\bin\Debug\net8.0\win-x64\cs\System.ServiceModel.Primitives.resources.dll
 C:\Users\0010\Desktop\projekat\ServiceFabric\TaxiApp\WebApi\bin\Debug\net8.0\win-x64\de\System.ServiceModel.Primitives.resources.dll
 C:\Users\0010\Desktop\projekat\ServiceFabric\TaxiApp\WebApi\bin\Debug\net8.0\win-x64\es\System.ServiceModel.Primitives.resources.dll
-C:\Users\0010\Desktop\projekat\ServiceFabric\TaxiApp\WebApi\bin\Debug\net8.0\win-x64\fr\System.ServiceModel.Primitives.resources.dll
 C:\Users\0010\Desktop\projekat\ServiceFabric\TaxiApp\WebApi\bin\Debug\net8.0\win-x64\it\System.ServiceModel.Primitives.resources.dll
-C:\Users\0010\Desktop\projekat\ServiceFabric\TaxiApp\WebApi\bin\Debug\net8.0\win-x64\ja\System.ServiceModel.Primitives.resources.dll
 C:\Users\0010\Desktop\projekat\ServiceFabric\TaxiApp\WebApi\bin\Debug\net8.0\win-x64\ko\System.ServiceModel.Primitives.resources.dll
 C:\Users\0010\Desktop\projekat\ServiceFabric\TaxiApp\WebApi\bin\Debug\net8.0\win-x64\pl\System.ServiceModel.Primitives.resources.dll
 C:\Users\0010\Desktop\projekat\ServiceFabric\TaxiApp\WebApi\bin\Debug\net8.0\win-x64\pt-BR\System.ServiceModel.Primitives.resources.dll

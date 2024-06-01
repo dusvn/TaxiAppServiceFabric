@@ -42,5 +42,11 @@ namespace Common.Interfaces
 
         [OperationContract]
         Task<RoadTrip> GetCurrentTripDriver(Guid id);
+
+        [OperationContract]
+        Task<List<RoadTrip>> GetAllNotRatedTrips();
+
+        [OperationContract]
+        Task<bool> SubmitRating(Guid tripId,int rating);    
      }
 }

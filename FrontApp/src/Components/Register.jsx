@@ -131,12 +131,12 @@ export default function Register() {
 
     const onSuccess = (res) => {
         const profile = res.profileObj;
-        console.log(profile);
-        setUserGoogleRegister(profile);
-        console.log("User google register:",userGoogleRegister);
-        setEmail(userGoogleRegister.email);
-        setFirstName(userGoogleRegister.givenName);
-        setLastName(userGoogleRegister.familyName);
+        // console.log(profile);
+        // setUserGoogleRegister(profile);
+        // console.log("User google register:",userGoogleRegister);
+        setEmail(profile.email);
+        setFirstName(profile.givenName);
+        setLastName(profile.familyName);
         
 
         setEmailError(!profile.email);
